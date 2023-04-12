@@ -5,7 +5,17 @@ const pages = ["home", "about", "blog", "contact"];
 <div class="text-2xl">
   {
     pages.map((pageName) => (
-      <a href={`${pageName === "home" ? "/" : `/${pageName}`}`}>
+      // {if(pageName)}
+      <a
+        href={
+          pageName === "home"
+            ? "/"
+            : pageName === "blog"
+            ? "https://blog.subrat.me"
+            : `/${pageName}`
+        }
+        target={pageName === "blog" ? "_blank" : ""}
+      >
         <div
           data-value-hover={"click(" + pageName + ")"}
           date-value={pageName}
