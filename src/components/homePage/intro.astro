@@ -1,12 +1,13 @@
 ---
-//
 const className =
   "text-slate-400 w-fit transition-all hover:text-primary-teal border-r-0 hover:border-b-2 hover:border-gray ";
 ---
 
-<div class="intro text-white h-screen pl-12 flex flex-col justify-center">
-  <div class="text-2xl text-primary-teal">Hey There,</div>
-  <p class="text-lg w-[60%]">
+<div
+  class="intro text-white h-screen mobile:h-1/4 pl-12 mobile:pl-4 flex flex-col justify-center"
+>
+  <div class="text-3xl text-primary-teal">Hey There,</div>
+  <p class="text-2xl w-[60%] mobile:w-fit">
     I'm a full-stack developer with 3+ years of experience using technologies
     such as
     <a class={`${className}`} href="https://nextjs.org/" target="_blank"
@@ -24,17 +25,19 @@ const className =
     >,
     <a class={`${className}`} href="https://threejs.org/" target="_blank"
       >Three.js</a
-    >and
+    > and
     <a class={`${className}`} href="https://graphql.org/" target="_blank"
-      >GraphQL .</a
+      >GraphQL.</a
     >
-    I have experience in freelancing and enjoy creating visually appealing web apps
-    that offer a great user experience.
+
     <!-- I specialize in both front-end and back-end
     development, and I'm confident in delivering top-notch solutions for challenging
     projects. -->
   </p>
-  <div class="text-xl font-bold text-gray mt-7">Scroll down to Know more</div>
+  <div
+    style="transform: matrix(1, 0, 0, 1, 0, 0)"
+    class="text-2xl mobile:hidden font-bold text-gray mt-7 transition-transform"
+  >
+    Scroll down to Know more
+  </div>
 </div>
-
-<style></style>

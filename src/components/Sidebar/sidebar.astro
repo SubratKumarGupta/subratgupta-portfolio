@@ -1,0 +1,83 @@
+---
+import Nav from "./nav.astro";
+import Hero from "./hero.astro";
+import Title from "./title.astro";
+---
+
+<div class="hero-root">
+  <div class="circle fixed"></div>
+  <div class="hero fixed h-screen text-white">
+    <Title />
+    <Hero />
+    <div class="nav absolute bottom-0 pb-3 mobile:hidden"><Nav /></div>
+
+    <style>
+      @keyframes scale-fade-out {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(3);
+        }
+      }
+      .hero-root {
+        --lineWidth: 2px;
+        --midpoint: 50%;
+        --circleSize: 12px;
+        --lineColor: #3ab3b3;
+        --divWidth: 25%;
+      }
+      .hero {
+        width: var(--divWidth);
+        z-index: 10; /* Stay on top */
+        top: 0; /* Stay at the top */
+        left: 0;
+        overflow-y: hidden;
+        background-size: var(--lineWidth) 100%;
+        background-image: linear-gradient(
+          transparent 0%,
+          #3fd4d464 var(--midpoint),
+          var(--lineColor) var(--midpoint),
+          var(--lineColor) 70%,
+          transparent 95%
+        );
+        background-position: right bottom;
+        background-repeat: no-repeat;
+      }
+      .circle {
+        top: var(
+          --midpoint
+        ); /*Align the pseudo-elements to the vertical center*/
+        left: calc(
+          var(--divWidth) -
+            calc(calc(var(--circleSize) / 2) + calc(var(--lineWidth) / 2))
+        );
+        /* Calculate the horizontal position based on the width of the parent element, the size of the circle, and the size of the gradient lines; */
+      }
+
+      .circle::before,
+      .circle::after {
+        content: "";
+        position: absolute;
+        z-index: 50;
+        width: var(--circleSize);
+        height: var(--circleSize);
+        border-radius: 50%;
+        background-image: radial-gradient(
+          circle,
+          var(--lineColor) 1px,
+          var(--lineColor) 2px
+        );
+      }
+
+      .circle::after {
+        animation-name: scale-fade-out;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: ease;
+      }
+    </style>
+  </div>
+</div>

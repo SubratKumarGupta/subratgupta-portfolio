@@ -2,10 +2,18 @@
 import Hero from "../components/Sidebar/hero.astro";
 import Intro from "../components/homePage/intro.astro";
 import Outro from "../components/homePage/outro.astro";
+import Skills from "../components/homePage/skills/skills.astro";
+import Hero from "../components/Sidebar/hero.astro";
+import Title from "../components/Sidebar/title.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Subrat.me">
+  <div class="hidden mobile:block">
+    <Title />
+    <Hero />
+  </div>
   <Intro />
+  <Skills />
   <Outro />
 </Layout>
