@@ -8,7 +8,11 @@
     ".three-raycaster"
   ) as HTMLCanvasElement;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+  });
   renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.shadowMap.enabled = false;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -34,10 +38,10 @@
   const scene = new THREE.Scene();
   let cameraRange = 3;
 
-  const setcolor = 0x000000;
-  scene.background = new THREE.Color(setcolor);
-  scene.fog = new THREE.Fog(setcolor, 2.5, 3.5);
-  //sean
+  //   const setcolor = ;
+  scene.background = null; //new THREE.Color(setcolor);
+  scene.fog = new THREE.Fog(0x000000, 2.5, 3.5);
+  //   sean
 
   const sceneGroup = new THREE.Object3D();
   const particularGruop = new THREE.Object3D();
