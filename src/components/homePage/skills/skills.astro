@@ -1,4 +1,21 @@
 ---
+import RayCaster from "./raycaster.astro";
 ---
 
-<div class="text-5xl">What can i do</div>
+<div class="skills">
+  <div
+    class="text-5xl mobile:text-4xl mobile:h-[30vh] h-[50vh] flex flex-col justify-center"
+  >
+    <div class="ml-12 mobile:ml-4 text-primary-teal">
+      {"${"}<span class="text-white">What can i do</span>{"}"}
+    </div>
+  </div>
+  <div class="h-[125vh] flex flex-col justify-center">
+    <div class="threejs h-full w-full">
+      <div class="text-3xl absolute to ml-12">
+        I can make amazing 3d experience
+      </div>
+      <RayCaster />
+    </div>
+  </div>
+</div>
