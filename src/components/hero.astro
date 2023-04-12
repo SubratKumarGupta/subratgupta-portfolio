@@ -2,29 +2,31 @@
 import Nav from "./nav.astro";
 ---
 
-<div class="hero h-screen text-white">
-  <div class="circle"></div>
-  <a href="#">
-    <div class="name font-medium text-2xl m-4 mt-0 pt-4">
-      Subrat<span class="me">.me()</span>
-    </div>
-  </a>
-
-  <div class="intro font-medium text-4xl ml-4 mt-20">
-    Hello, it's SubratGupta
-    <div class="text-2xl mt-2 text-gray">Full-Satck Devloper</div>
-  </div>
-
-  <div class="patron px-4 mt-3">
-    <a href="https://example.com/patron-page">
-      <button
-        class="btn w-full border-2 border-primary-teal transition-all duration-150 hover:bg-costom-teal-800 text-white px-4 py-2"
-        >Support me on Patron</button
-      >
+<div class="hero-root">
+  <div class="circle fixed"></div>
+  <div class="hero fixed h-screen text-white">
+    <a href="#">
+      <div class="name font-medium text-2xl m-4 mt-0 pt-4">
+        Subrat<span class="me">.me()</span>
+      </div>
     </a>
-  </div>
 
-  <div class="nav mt-[60%]"><Nav /></div>
+    <div class="intro font-medium text-4xl ml-4 mt-20">
+      Hello, it's SubratGupta
+      <div class="text-2xl mt-2 text-gray">Full-Satck Devloper</div>
+    </div>
+
+    <div class="patron px-4 mt-3">
+      <a href="https://example.com/patron-page">
+        <button
+          class="btn w-full border-2 border-primary-teal transition-all duration-150 hover:bg-costom-teal-800 text-white px-4 py-2"
+          >Support me on Patron</button
+        >
+      </a>
+    </div>
+
+    <div class="nav mt-[60%]"><Nav /></div>
+  </div>
 </div>
 
 <style>
@@ -38,18 +40,22 @@ import Nav from "./nav.astro";
       transform: scale(3);
     }
   }
+  .hero-root {
+    --lineWidth: 2px;
+    --midpoint: 50%;
+    --circleSize: 12px;
+    --lineColor: #3ab3b3;
+    --divWidth: 25%;
+  }
   .me {
     color: var(--lineColor);
   }
   .hero {
-    --lineWidth: 2px;
-    --midpoint: 50%;
-    --circleSize: 12px;
-
-    --lineColor: #3ab3b3;
-    --divWidth: 25%;
-
     width: var(--divWidth);
+    z-index: 10; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    overflow-y: hidden;
     background-size: var(--lineWidth) 100%;
     background-image: linear-gradient(
       transparent 0%,
@@ -61,17 +67,20 @@ import Nav from "./nav.astro";
     background-position: right bottom;
     background-repeat: no-repeat;
   }
+  .circle {
+    top: var(--midpoint); /*Align the pseudo-elements to the vertical center*/
+    left: calc(
+      var(--divWidth) -
+        calc(calc(var(--circleSize) / 2) + calc(var(--lineWidth) / 2))
+    );
+    /* Calculate the horizontal position based on the width of the parent element, the size of the circle, and the size of the gradient lines; */
+  }
+
   .circle::before,
   .circle::after {
     content: "";
     position: absolute;
-    top: var(--midpoint); /* Align the pseudo-elements to the vertical center */
-    left: calc(
-      var(--divWidth) -
-        calc(calc(var(--circleSize) / 2) + calc(var(--lineWidth) / 2))
-    ); /* Calculate the horizontal position based on the width of the parent element, the size of the circle, and the size of the gradient lines */
     z-index: 50;
-    /* transform: translateX(-50%); */
     width: var(--circleSize);
     height: var(--circleSize);
     border-radius: 50%;
@@ -81,6 +90,7 @@ import Nav from "./nav.astro";
       var(--lineColor) 2px
     );
   }
+
   .circle::after {
     animation-name: scale-fade-out;
     animation-duration: 1s;
