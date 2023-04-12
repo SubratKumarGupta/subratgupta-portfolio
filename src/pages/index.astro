@@ -1,5 +1,7 @@
 ---
-import Hero from "../components/hero.astro";
+import Hero from "../components/Sidebar/hero.astro";
+import Intro from "../components/homePage/intro.astro";
+import Outro from "../components/homePage/outro.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
@@ -7,6 +9,9 @@ import Layout from "../layouts/Layout.astro";
   <main class="flex font-robotoMono">
     <Hero body="" title="" />
     <!-- margin-left(ml) should be same width as Hreo/sidebar width -->
-    <div class="content ml-[25%] text-primary-teal p-4"></div>
+    <div class="content ml-[25%] p-4">
+      <Intro />
+      <Outro />
+    </div>
   </main>
 </Layout>

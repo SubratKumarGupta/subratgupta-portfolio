@@ -3,7 +3,9 @@ module.exports = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     fontFamily: {
+      // font-family: "Times New Roman", Times, serif;
       robotoMono: ["Roboto Mono", "monospace"],
+      robotoSarif: ["Roboto Mono", "monospace", "serif"],
     },
     extend: {
       animation: {
