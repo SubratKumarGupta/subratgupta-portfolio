@@ -1,11 +1,16 @@
 ---
+export interface Props {
+  className: string;
+}
+
+const { className } = Astro.props;
 ---
 
 <script>
   import * as THREE from "three";
   import gsap, { Power4 } from "gsap";
-  const canvas = document.querySelector(
-    ".three-raycaster"
+  const canvas = document.getElementById(
+    "three-raycaster"
   ) as HTMLCanvasElement;
 
   const renderer = new THREE.WebGLRenderer({
@@ -21,8 +26,8 @@
   window.addEventListener("resize", onWindowResize, false);
 
   function onWindowResize(): void {
-    const canvas = document.querySelector(
-      ".three-raycaster"
+    const canvas = document.getElementById(
+      "three-raycaster"
     ) as HTMLCanvasElement;
     camera.aspect = canvas.clientWidth / canvas.clientHeight;
     camera.updateProjectionMatrix();
@@ -275,4 +280,4 @@
   init();
 </script>
 
-<canvas class="three-raycaster w-full h-full"></canvas>
+<canvas id="three-raycaster" class={className}></canvas>

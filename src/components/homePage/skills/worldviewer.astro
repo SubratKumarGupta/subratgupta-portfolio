@@ -1,4 +1,10 @@
 ---
+export interface Props {
+  className: string;
+  btnClass: string;
+}
+
+const { className, btnClass } = Astro.props;
 ---
 
 <script>
@@ -21,8 +27,8 @@
     "sand_universe.jpg",
     "surreal_flowers.jpg",
   ]);
-  const canvas = document.querySelector(
-    ".three-worldviewer"
+  const canvas = document.getElementById(
+    "three-worldviewer"
   ) as HTMLCanvasElement;
   // Create the scene, camera, and renderer
   const scene = new THREE.Scene();
@@ -150,7 +156,5 @@
   });
 </script>
 
-<canvas class="three-worldviewer w-full h-full"></canvas>
-<div class="loadworld cursor-pointer bg-white text-black absolute">
-  Click to Load New Texture
-</div>
+<canvas id="three-worldviewer" class={className}></canvas>
+<div class={`loadworld ${btnClass}`}>Click to Load New Texture</div>

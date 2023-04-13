@@ -16,7 +16,13 @@ import Worldviewer from "./worldviewer.astro";
       <div class="text-3xl absolute to ml-12">
         I can make amazing 3d experience
       </div>
-      <Worldviewer />
+      <div class="demos flex flex-col justify-center h-full w-full relative">
+        <RayCaster className="absolute w-full h-full " />
+        <Worldviewer
+          className="absolute w-full h-full "
+          btnClass="cursor-pointer bg-white text-black absolute"
+        />
+      </div>
     </div>
   </div>
 </div>
