@@ -1,0 +1,123 @@
+<script src="./raycaster.ts"></script>
+<script src="./worldviewer.ts"></script>
+<script>
+  import { gsap } from "gsap";
+
+  const raycasterCanvas = document.getElementById(
+    "raycaster-wrapper"
+  ) as HTMLDivElement;
+  const worldViewerCanvas = document.getElementById(
+    "worldviewe-wrapper"
+  ) as HTMLDivElement;
+  const loadWorldBtn = document.getElementById(
+    "loadworld"
+  ) as HTMLCanvasElement;
+
+  type ToggleBtn = HTMLDivElement & {
+    firstElementChild: HTMLSpanElement;
+  };
+  const toggleBtn = document.getElementById("toggel-btn") as ToggleBtn;
+  toggleBtn.addEventListener("click", () => {
+    // worldViewerCanvas.classList.remove("inital");
+    console.log(worldViewerCanvas.classList.value);
+
+    if (raycasterCanvas.classList.contains("hide")) {
+      // Show raycasterCanvas and hide worldViewerCanvas
+      raycasterCanvas.classList.remove("hide");
+      worldViewerCanvas.classList.add("hide");
+      loadWorldBtn.classList.add("hide");
+
+      // Set innerText of toggleBtn
+      (() => {
+        toggleBtn.innerHTML = "click";
+        const span = document.createElement("span");
+        span.innerText = ".me()";
+        span.style.color = "#3fd4d4";
+        toggleBtn.appendChild(span);
+      })();
+
+      // Add fade transition using GSAP
+      gsap.to(raycasterCanvas, { duration: 0.5, opacity: 1 });
+      gsap.to(worldViewerCanvas, { duration: 0.5, opacity: 0 });
+      gsap.fromTo(
+        loadWorldBtn,
+        { width: "11rem", opacity: 1 },
+        { width: 1, opacity: 0 }
+      );
+      gsap.to(toggleBtn, { marginLeft: 0 });
+    } else {
+      // Show worldViewerCanvas and hide raycasterCanvas
+      raycasterCanvas.classList.add("hide");
+
+      worldViewerCanvas.classList.remove("hide");
+      loadWorldBtn.classList.remove("hide");
+
+      // Set innerText of toggleBtn
+      (() => {
+        toggleBtn.innerHTML = "go";
+        const span = document.createElement("span");
+        span.innerText = ".back()";
+        span.style.color = "#3fd4d4";
+        toggleBtn.appendChild(span);
+      })();
+
+      // Add fade transition using GSAP
+      gsap.to(raycasterCanvas, { duration: 0.5, opacity: 0 });
+      gsap.to(worldViewerCanvas, { duration: 0.5, opacity: 1 });
+      gsap.fromTo(
+        loadWorldBtn,
+        { width: 1, opacity: 0 },
+        { width: "11rem", opacity: 1 }
+      );
+      gsap.to(toggleBtn, { marginLeft: "1.25rem" });
+      // gsap.to(toggleBtn, { duration: 0.5, opacity: 0 });
+    }
+  });
+</script>
+
+<div class="w-full h-full z-5 relative flex flex-col justify-center">
+  <div class="absolute z-10 ml-5 pointer-events-none">
+    <div class="text-4xl ml-1 mb-[20%]">
+      <span class="text-primary-teal font-semibold">\</span>I can make amazing
+      3D experience
+    </div>
+  </div>
+  <div class="absolute bottom-0 z-10 text-3xl mb-16">
+    <div class="text-gray text-[2.6rem] ml-5 pointer-events-none">
+      Drag your mouse
+    </div>
+    <div class="interactions flex mt-2 font-bold">
+      <div
+        id="loadworld"
+        class="cursor-pointer w-[0] hide ml-5 border-b-[3.5px] pb-1 border-transparent"
+      >
+        load<span>.new()</span>
+      </div>
+      <div
+        id="toggel-btn"
+        class="cursor-pointer ml-[0] border-b-[3.5px] pb-1 border-transparent"
+      >
+        click<span>.Me()</span>
+      </div>
+    </div>
+  </div>
+  <div id="raycaster-wrapper" class="w-full h-full absolute">
+    <canvas id="three-raycaster" class="w-full h-full"></canvas>
+  </div>
+  <div id="worldviewe-wrapper" class="w-full h-full hide absolute">
+    <canvas id="three-worldviewer" class="w-full h-full"></canvas>
+  </div>
+</div>
+
+<style>
+  .hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .interactions span {
+    color: #3ab3b3;
+  }
+  .interactions div:hover span {
+    color: #00c3ff;
+  }
+</style>
