@@ -56,14 +56,15 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       this.draw();
       this.timeline = gsap.timeline({
         repeat: -1,
-        onStart: () => {
-          this.context.clearRect(
-            this.x - animateToRadius - this.lineWidth,
-            this.y - animateToRadius - this.lineWidth,
-            animateToRadius * 2 + this.lineWidth * 2,
-            animateToRadius * 2 + this.lineWidth * 2
-          );
-        },
+        // repeatRefresh: true,
+        // onStart: () => {
+        //   this.context.clearRect(
+        //     this.x - animateToRadius - this.lineWidth,
+        //     this.y - animateToRadius - this.lineWidth,
+        //     animateToRadius * 2 + this.lineWidth * 2,
+        //     animateToRadius * 2 + this.lineWidth * 2
+        //   );
+        // },
         onUpdate: () => {
           this.context.clearRect(
             this.x - animateToRadius - this.lineWidth,
@@ -73,14 +74,14 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
           );
           this.draw();
         },
-        onComplete: () => {
-          this.context.clearRect(
-            this.x - animateToRadius - this.lineWidth,
-            this.y - animateToRadius - this.lineWidth,
-            animateToRadius * 2 + this.lineWidth * 2,
-            animateToRadius * 2 + this.lineWidth * 2
-          );
-        },
+        // onComplete: () => {
+        //   this.context.clearRect(
+        //     this.x - animateToRadius - this.lineWidth,
+        //     this.y - animateToRadius - this.lineWidth,
+        //     animateToRadius * 2 + this.lineWidth * 2,
+        //     animateToRadius * 2 + this.lineWidth * 2
+        //   );
+        // },
       });
       this.animate(animateToRadius);
     }
@@ -140,7 +141,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
           canvas,
           x,
           y,
-          30,
+          Math.random() * 10,
           outerRadius,
           innerRadius,
           color,
