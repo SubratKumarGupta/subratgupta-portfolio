@@ -13,8 +13,10 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   <div class="h-[100vh]">
     <DemoThreejs />
   </div>
-  <div class="h-[100vh]">
-    <canvas id="dottodot" class="h-full w-full"></canvas>
+  <div class="h-[100vh] relative">
+    <canvas id="dottodot-backround" class="h-full w-full absolute"> </canvas>
+
+    <canvas id="dottodot" class="h-full w-full absolute"></canvas>
   </div>
 </div>
 <script>
