@@ -147,3 +147,83 @@ document.getElementById("loadworld")?.addEventListener("click", () => {
   //   duration: 0.5,
   // })
 });
+
+// private drawLine(to: [number, number]) {
+//   const line = {
+//     XStart: this.x,
+//     YStart: this.y,
+//     XEnd: this.x,
+//     YEnd: this.y,
+//   };
+//   const lineWidth = 2;
+//   const lineColor = "#ffffff";
+//   function clearLineSquared(
+//     context: CanvasRenderingContext2D,
+//     x1: number,
+//     y1: number,
+//     x2: number,
+//     y2: number,
+//     thickness: number
+//   ) {
+//     const distance = (x1: number, y1: number, x2: number, y2: number) => {
+//       x2 -= x1;
+//       y2 -= y1;
+//       return Math.sqrt(x2 * x2 + y2 * y2);
+//     };
+//     let tmp, length;
+
+//     // swap coordinate pairs if x-coordinates are RTL to make them LTR
+//     if (x2 < x1) {
+//       tmp = x1;
+//       x1 = x2;
+//       x2 = tmp;
+//       tmp = y1;
+//       y1 = y2;
+//       y2 = tmp;
+//     }
+
+//     length = distance(x1, y1, x2, y2);
+
+//     context.save();
+//     context.translate(x1, y1);
+//     context.rotate(Math.atan2(y2 - y1, x2 - x1));
+//     context.clearRect(0, 0, length, thickness);
+//     context.restore();
+//   }
+//   const draw = () => {
+//     this.bgcontext.beginPath();
+//     this.bgcontext.moveTo(line.XStart, line.YStart);
+//     this.bgcontext.lineTo(line.XEnd, line.YEnd);
+//     this.bgcontext.stroke();
+//     this.bgcontext.lineWidth = lineWidth;
+//     this.bgcontext.strokeStyle = lineColor;
+//     this.bgcontext.closePath();
+//   };
+//   draw();
+//   const fireTimeline = gsap.timeline({
+//     repeat: -1,
+//     onUpdate: () => {
+//       // console.log(line);
+//       clearLineSquared(
+//         this.bgcontext,
+//         line.XStart,
+//         line.YStart,
+//         line.XEnd,
+//         line.XEnd,
+//         lineWidth
+//       );
+//       draw();
+//     },
+//   });
+//   fireTimeline
+//     .to(line, {
+//       duration: 7,
+//       XEnd: to[0],
+//       YEnd: to[1],
+//     })
+//     .to(line, {
+//       duration: 6,
+//       XStart: to[0],
+//       YStart: to[1],
+//     });
+// }

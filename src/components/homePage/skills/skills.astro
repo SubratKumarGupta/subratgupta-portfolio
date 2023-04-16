@@ -13,15 +13,25 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   <div class="h-[100vh]">
     <DemoThreejs />
   </div>
-  <div class="h-[100vh] relative">
-    <canvas id="dottodot-backround" class="h-full w-full absolute"> </canvas>
+  <div id="dottodot-parent" class="h-[100vh] relative">
+    <div id="dottodot-line-parent" class="h-full w-full z-1 absolute"></div>
+    <canvas id="dottodot" class="h-full w-full z-5 absolute"></canvas>
 
-    <canvas id="dottodot" class="h-full w-full absolute"></canvas>
+    <!-- <canvas id="" class="h-full w-full absolute"> </canvas> -->
   </div>
 </div>
+<style>
+  .dottodot-backgound {
+    height: 100%;
+    width: 100%;
+    background: #000;
+    position: absolute;
+  }
+</style>
 <script>
   import gsap from "gsap";
   class Circle {
+    bgParent: HTMLDivElement;
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     x: number;
@@ -35,6 +45,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     timeline: gsap.core.Timeline;
     animateToRadius: number;
     constructor(
+      bgParent: HTMLDivElement,
       canvas: HTMLCanvasElement,
       x: number,
       y: number,
@@ -42,10 +53,11 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       outerRadius: number,
       innerRadius: number,
       color: string,
-      lineWidth = 1,
-      lineColor = "black"
+      lineWidth: number,
+      lineColor: string
     ) {
       (this.animateToRadius = animateToRadius), (this.canvas = canvas);
+      this.bgParent = bgParent;
       this.context = canvas.getContext("2d")!;
       this.x = x;
       this.y = y;
@@ -55,37 +67,40 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       this.color = color;
       this.lineWidth = lineWidth;
       this.lineColor = lineColor;
-      this.draw();
       this.timeline = gsap.timeline({
         repeat: -1,
+        delay: 2,
         // repeatRefresh: true,
-        // onStart: () => {
-        //   this.context.clearRect(
-        //     this.x - animateToRadius - this.lineWidth,
-        //     this.y - animateToRadius - this.lineWidth,
-        //     animateToRadius * 2 + this.lineWidth * 2,
-        //     animateToRadius * 2 + this.lineWidth * 2
-        //   );
-        // },
-        onUpdate: () => {
+        onStart: () => {
           this.context.clearRect(
             this.x - animateToRadius - this.lineWidth,
             this.y - animateToRadius - this.lineWidth,
             animateToRadius * 2 + this.lineWidth * 2,
             animateToRadius * 2 + this.lineWidth * 2
           );
+        },
+        onUpdate: () => {
+          this.context.clearRect(
+            this.x - animateToRadius - lineWidth,
+            this.y - animateToRadius - lineWidth,
+            animateToRadius * 2 + lineWidth * 2,
+            animateToRadius * 2 + lineWidth * 2
+          );
           this.draw();
         },
-        // onComplete: () => {
-        //   this.context.clearRect(
-        //     this.x - animateToRadius - this.lineWidth,
-        //     this.y - animateToRadius - this.lineWidth,
-        //     animateToRadius * 2 + this.lineWidth * 2,
-        //     animateToRadius * 2 + this.lineWidth * 2
-        //   );
-        // },
+        onComplete: () => {
+          // const lineWidth = 20;
+          this.context.clearRect(
+            this.x - animateToRadius - lineWidth,
+            this.y - animateToRadius - lineWidth,
+            animateToRadius * 2 + lineWidth * 2,
+            animateToRadius * 2 + lineWidth * 2
+          );
+        },
       });
+      // this.draw();
       this.animate(animateToRadius);
+      this.drawLine([55, 150]);
     }
     private animate(to: number) {
       this.timeline
@@ -102,6 +117,67 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
           lineWidth: 0,
         });
     }
+    private drawLine(to: [number, number]) {
+      const canvas = document.createElement("canvas") as HTMLCanvasElement; // create a new canvas element
+      canvas.classList.add("dottodot-background"); // add the "dottodot-background" class to the canvas
+      canvas.height = this.canvas.clientHeight; // set the canvas height to 100%
+      canvas.width = this.canvas.clientWidth; // set the canvas width to 100%
+      canvas.style.position = "absolute";
+      // canvas.style.zIndex = "1"; // set the canvas z-index to 5
+      this.bgParent.appendChild(canvas); // append the canvas
+      const lineContext = canvas.getContext("2d")!;
+
+      type Line = {
+        XStart: number;
+        YStart: number;
+        XEnd: number;
+        YEnd: number;
+      };
+      const line: Line = {
+        XStart: this.x,
+        YStart: this.y,
+        XEnd: this.x,
+        YEnd: this.y,
+      };
+      const lineWidth = 1;
+      const lineColor = "#ffffff";
+
+      const draw = (lineContext: CanvasRenderingContext2D) => {
+        lineContext.beginPath();
+        lineContext.moveTo(line.XStart, line.YStart);
+        lineContext.lineTo(line.XEnd, line.YEnd);
+        lineContext.stroke();
+        lineContext.lineWidth = lineWidth;
+        lineContext.strokeStyle = lineColor;
+        lineContext.closePath();
+      };
+      const Drawline = gsap.timeline({
+        repeat: -1,
+        onStart: () => {},
+        onUpdate: () => {
+          draw(lineContext);
+        },
+        onComplete: () => {
+          //
+          // this.bgcontext.globalCompositeOperation = "source-over";
+        },
+      });
+      Drawline.to(line, {
+        onUpdate: () => {},
+        duration: 1,
+        XEnd: to[0],
+        YEnd: to[1],
+      }).to(line, {
+        onStart: () => {},
+        onUpdate: () => {
+          lineContext.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+        },
+        duration: 3,
+        XStart: to[0],
+        YStart: to[1],
+      });
+    }
+
     draw() {
       this.context.beginPath();
       this.context.arc(this.x, this.y, this.outerRadius, 0, 2 * Math.PI);
@@ -119,11 +195,14 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       this.context.closePath();
     }
   }
-
+  const bgparent = document.getElementById(
+    "dottodot-line-parent"
+  ) as HTMLDivElement; // get the div element
   const canvas = document.getElementById("dottodot") as HTMLCanvasElement;
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
   function drawCircleGrid(
+    bgparent: HTMLDivElement,
     canvas: HTMLCanvasElement,
     spacing: number,
     outerRadius: number,
@@ -140,10 +219,11 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         const x = (j + 0.5) * spacing;
         const y = (i + 0.5) * spacing;
         new Circle(
+          bgparent,
           canvas,
           x,
           y,
-          Math.random() * 10,
+          Math.random() * 30,
           outerRadius,
           innerRadius,
           color,
@@ -156,8 +236,12 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   window.addEventListener("resize", () => {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    drawCircleGrid(canvas, 60, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
+    const canvases = document.querySelectorAll(".dottodot-background"); // get all canvas elements with the "dottodot-background" class
+    canvases.forEach((canvas) => {
+      canvas.remove(); // remove each canvas element
+    });
+    drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
   });
-  drawCircleGrid(canvas, 60, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
+  drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
 </script>
 <script></script>
