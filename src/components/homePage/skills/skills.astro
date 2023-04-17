@@ -31,19 +31,18 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
 <script>
   import gsap from "gsap";
   class Circle {
-    bgParent: HTMLDivElement;
-    canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
-    x: number;
-    y: number;
-    outerRadius: number;
-    innerRadius: number;
-    color: string;
-    id: [number, number];
-    lineWidth: number;
-    lineColor: string;
-    timeline: gsap.core.Timeline;
-    animateToRadius: number;
+    private bgParent: HTMLDivElement;
+    private canvas: HTMLCanvasElement;
+    private context: CanvasRenderingContext2D;
+    public readonly x: number;
+    public readonly y: number;
+    public readonly outerRadius: number;
+    public readonly innerRadius: number;
+    public readonly color: string;
+    public readonly lineWidth: number;
+    public readonly lineColor: string;
+    private timeline: gsap.core.Timeline;
+    public readonly animateToRadius: number;
     constructor(
       bgParent: HTMLDivElement,
       canvas: HTMLCanvasElement,
@@ -54,14 +53,14 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       innerRadius: number,
       color: string,
       lineWidth: number,
-      lineColor: string
+      lineColor: string,
+      to: [number, number]
     ) {
       (this.animateToRadius = animateToRadius), (this.canvas = canvas);
       this.bgParent = bgParent;
       this.context = canvas.getContext("2d")!;
       this.x = x;
       this.y = y;
-      this.id = [x, y];
       this.outerRadius = outerRadius;
       this.innerRadius = innerRadius;
       this.color = color;
@@ -100,7 +99,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       });
       // this.draw();
       this.animate(animateToRadius);
-      this.drawLine([55, 150]);
+      this.drawLineTo(to);
     }
     private animate(to: number) {
       this.timeline
@@ -117,7 +116,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
           lineWidth: 0,
         });
     }
-    private drawLine(to: [number, number]) {
+    public drawLineTo(to: [number, number]) {
       const canvas = document.createElement("canvas") as HTMLCanvasElement; // create a new canvas element
       canvas.classList.add("dottodot-background"); // add the "dottodot-background" class to the canvas
       canvas.height = this.canvas.clientHeight; // set the canvas height to 100%
@@ -178,7 +177,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       });
     }
 
-    draw() {
+    private draw() {
       this.context.beginPath();
       this.context.arc(this.x, this.y, this.outerRadius, 0, 2 * Math.PI);
       this.context.fillStyle = this.color;
@@ -201,6 +200,80 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   const canvas = document.getElementById("dottodot") as HTMLCanvasElement;
   canvas.width = canvas.clientWidth;
   canvas.height = canvas.clientHeight;
+  type CircleGridValue = {
+    id: [number, number];
+    pos: { X: number; Y: number };
+    // paused: boolean ;
+    // canPause: boolean ;
+    instance: Circle | null;
+  };
+
+  type Address = { Row: number; Col: number };
+  type GridSize = {
+    Rows: number;
+    Cols: number;
+  };
+  class CircleGrid {
+    private static instance: CircleGrid;
+    private grid: Map<string, CircleGridValue>;
+
+    private constructor(
+      public readonly rows: number,
+      public readonly cols: number,
+      public readonly spacing: number
+    ) {
+      this.grid = new Map();
+      this.spacing = spacing;
+      for (let row = 0; row < this.rows; row++) {
+        for (let col = 0; col < this.cols; col++) {
+          const key = this.getAddressKey(row, col);
+          const x = (col + 0.5) * spacing;
+          const y = (row + 0.5) * spacing;
+          this.grid.set(key, {
+            id: [col, row],
+            pos: { X: x, Y: y },
+            instance: null,
+          });
+        }
+      }
+    }
+
+    public static getInstance(
+      rows: number,
+      cols: number,
+      spacing: number
+    ): CircleGrid {
+      if (!CircleGrid.instance) {
+        CircleGrid.instance = new CircleGrid(rows, cols, spacing);
+      }
+      return CircleGrid.instance;
+    }
+
+    public getValue(row: number, col: number): CircleGridValue {
+      const key = this.getAddressKey(row, col);
+      const gridValue = this.grid.get(key);
+      if (!gridValue) {
+        throw new Error(`No value found at address: Row ${row}, Col ${col}`);
+      }
+      return gridValue;
+    }
+
+    public setValue(row: number, col: number, value: CircleGridValue): void {
+      const key = this.getAddressKey(row, col);
+      this.grid.set(key, value);
+    }
+
+    public getRandomAddress(): { Row: number; Col: number } {
+      const randomRow = Math.floor(Math.random() * this.rows);
+      const randomCol = Math.floor(Math.random() * this.cols);
+      return { Row: randomRow, Col: randomCol };
+    }
+
+    private getAddressKey(row: number, col: number): string {
+      return `${row},${col}`;
+    }
+  }
+
   function drawCircleGrid(
     bgparent: HTMLDivElement,
     canvas: HTMLCanvasElement,
@@ -213,26 +286,325 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   ) {
     const numCols = Math.floor(canvas.width / spacing);
     const numRows = Math.floor(canvas.height / spacing);
+    const circleGrid = CircleGrid.getInstance(numRows, numCols, spacing);
+    const getRandomExcept = (
+      input: number,
+      maxlimit: number,
+      exclude: number
+    ): number => {
+      // if (!Number.isInteger(input) || !Number.isInteger(maxlimit) || !Number.isInteger(exclude)) {
+      //   throw new Error("Invalid input: all inputs must be integers.");
+      // }
+      // if (input < 0 || input >= maxlimit || exclude < 0 || exclude >= maxlimit) {
+      //   throw new Error("Invalid input: input and exclude must be between 0 and maxlimit-1.");
+      // }
 
-    for (let i = 0; i < numRows; i++) {
-      for (let j = 0; j < numCols; j++) {
-        const x = (j + 0.5) * spacing;
-        const y = (i + 0.5) * spacing;
-        new Circle(
-          bgparent,
-          canvas,
-          x,
-          y,
-          Math.random() * 30,
-          outerRadius,
-          innerRadius,
-          color,
-          lineWidth,
-          lineColor
+      let randNum: number = Math.floor(Math.random() * (maxlimit - 2)) + 1;
+      if (randNum >= input) {
+        randNum++;
+      }
+      if (randNum >= exclude) {
+        randNum++;
+      }
+
+      return randNum;
+    };
+
+    function getForwardDiagonalLength(
+      rows: number,
+      cols: number,
+      cellAddress: Address
+    ): number {
+      const minDimension = Math.min(rows, cols);
+      let diagonalLength = 0;
+
+      if (cellAddress.Row <= cellAddress.Col) {
+        diagonalLength = Math.min(
+          minDimension,
+          cols - cellAddress.Col + cellAddress.Row
+        );
+      } else {
+        diagonalLength = Math.min(
+          minDimension,
+          rows - cellAddress.Row + cellAddress.Col
         );
       }
+
+      return diagonalLength;
     }
+    function countBackwardDiagonalElements(
+      rows: number,
+      cols: number,
+      cellAddress: Address
+    ): number {
+      const minDimension = Math.min(rows, cols);
+      let diagonalLength = 0;
+
+      // Determine the length of the diagonal based on the position of the cell within the grid.
+      if (cellAddress.Row + cellAddress.Col >= cols) {
+        diagonalLength = Math.min(
+          minDimension,
+          cols - cellAddress.Col + rows - cellAddress.Row
+        );
+      } else {
+        diagonalLength = Math.min(
+          minDimension,
+          cellAddress.Row + cellAddress.Col + 1
+        );
+      }
+
+      return diagonalLength;
+    }
+    function calculateDiagonalCellCol(
+      origin: Address,
+      gridSize: GridSize,
+      diagonalRow: number,
+      mode: "Forward" | "Backward"
+    ): number {
+      const rowDiff = origin.Row - diagonalRow;
+
+      let otherCellCol: number;
+      if (mode === "Forward") {
+        otherCellCol = origin.Col + rowDiff;
+      } else if (mode === "Backward") {
+        otherCellCol = origin.Col - rowDiff;
+      } else {
+        throw new Error(`Invalid mode: ${mode}`);
+      }
+
+      if (otherCellCol < 0 || otherCellCol >= gridSize.Cols) {
+        console.error(
+          "Error: calculated column value is out of bounds",
+          otherCellCol,
+          gridSize.Rows,
+          origin.Row >= gridSize.Rows,
+          { origin, diagonalRow }
+        );
+      }
+
+      return otherCellCol;
+    }
+    const randomZeroOrOne = () => {
+      return Math.round(Math.random());
+    };
+    const genrateRandomAddress = (range: number, address: Address): Address => {
+      const getRandomAddressOnForwordDigonal = (): Address => {
+        const newRow = getRandomExcept(
+          address.Row,
+          Math.min(
+            range,
+            getForwardDiagonalLength(
+              circleGrid.rows,
+              circleGrid.cols,
+              address
+            ) - 1
+          ),
+          address.Row
+        );
+        const newAddress: Address = {
+          Row: newRow,
+          Col: calculateDiagonalCellCol(
+            address,
+            { Rows: circleGrid.rows, Cols: circleGrid.cols },
+            newRow,
+            "Forward"
+          ),
+        };
+        return newAddress;
+      };
+      const getRandomAddressOnBackwordsDigonal = (): Address => {
+        const newRow = getRandomExcept(
+          address.Row,
+          Math.min(
+            range,
+            countBackwardDiagonalElements(
+              circleGrid.rows,
+              circleGrid.cols,
+              address
+            ) - 1
+          ),
+          address.Row
+        );
+        const newAddress: Address = {
+          Row: newRow,
+          Col: calculateDiagonalCellCol(
+            address,
+            { Rows: circleGrid.rows, Cols: circleGrid.cols },
+            newRow,
+            "Backward"
+          ),
+        };
+        return newAddress;
+      };
+      // Generate a random address based on the given range and the current address
+      if (randomZeroOrOne()) {
+        // perpendicular
+        return randomZeroOrOne()
+          ? {
+              Row: address.Row,
+              Col: getRandomExcept(
+                address.Col,
+                Math.min(range, circleGrid.cols - 1),
+                address.Col
+              ),
+            }
+          : {
+              Row: getRandomExcept(
+                address.Row,
+                Math.min(range, circleGrid.rows - 1),
+                address.Row
+              ),
+              Col: address.Col,
+            };
+      } else {
+        return randomZeroOrOne()
+          ? getRandomAddressOnForwordDigonal()
+          : getRandomAddressOnBackwordsDigonal();
+      }
+    };
+
+    const generateListOfRandomAddress = (howMany: number, range: number) => {
+      const listOfRandomAddress: Address[] = [];
+      const firstAddress = circleGrid.getRandomAddress();
+      listOfRandomAddress.push(firstAddress);
+
+      const maxAttempts = 100; // set the maximum number of attempts
+      let attemptCount = 0; // initialize the counter
+
+      function isCellOutOfBounds(cell: Address, gridSize: GridSize): boolean {
+        return (
+          cell.Row < 0 ||
+          cell.Row >= gridSize.Rows ||
+          cell.Col < 0 ||
+          cell.Col >= gridSize.Cols
+        );
+      }
+
+      let validAddressGenerated = false;
+      while (listOfRandomAddress.length < howMany) {
+        validAddressGenerated = false;
+        attemptCount++;
+        if (attemptCount === maxAttempts) {
+          throw new Error(
+            `Failed to generate ${howMany} random addresses within ${maxAttempts} attempts. Maximum attempts reached.`
+          );
+        }
+        const newAddress = genrateRandomAddress(
+          range,
+          listOfRandomAddress[listOfRandomAddress.length - 1]
+        );
+        const doesAddressAlreadyExist = listOfRandomAddress.some(
+          (addr) => addr.Col === newAddress.Col && addr.Row === newAddress.Row
+        );
+        const outOfBounds = isCellOutOfBounds(newAddress, {
+          Rows: circleGrid.rows,
+          Cols: circleGrid.cols,
+        });
+
+        if (doesAddressAlreadyExist || outOfBounds) {
+          continue;
+        }
+
+        validAddressGenerated = true;
+        listOfRandomAddress.push(newAddress);
+      }
+
+      return listOfRandomAddress;
+    };
+
+    // const generateListOfRandomAddress = (howMany: number, range: number) => {
+    //   const listOfRandomAddress: Address[] = [];
+    //   const firstAddress = { Row: -2, Col: -2 }; //circleGrid.getRandomAddress();
+    //   listOfRandomAddress.push(firstAddress);
+
+    //   const maxAttempts = 50; // set the maximum number of attempts
+
+    //   function isCellOutOfBounds(cell: Address, gridSize: GridSize): boolean {
+    //     return (
+    //       cell.Row < 0 ||
+    //       cell.Row >= gridSize.Rows ||
+    //       cell.Col < 0 ||
+    //       cell.Col >= gridSize.Cols
+    //     );
+    //   }
+
+    //   for (let attemptCount = 1; attemptCount <= maxAttempts; attemptCount++) {
+    //     const newAddress = genrateRandomAddress(
+    //       range,
+    //       listOfRandomAddress[listOfRandomAddress.length - 1]
+    //     );
+    //     const doesAddressAlreadyExist = listOfRandomAddress.some(
+    //       (addr) => addr.Col === newAddress.Col && addr.Row === newAddress.Row
+    //     );
+    //     const outOfBounds = isCellOutOfBounds(newAddress, {
+    //       Rows: circleGrid.rows,
+    //       Cols: circleGrid.cols,
+    //     });
+
+    //     if (doesAddressAlreadyExist) {
+    //       continue;
+    //     }
+
+    //     if (outOfBounds) {
+    //       const outOfBoundError = new Error(
+    //         `Failed to generate ${howMany} random addresses within ${maxAttempts} attempts. Some generated addresses were out of bounds.`
+    //       );
+    //       console.error(outOfBoundError, attemptCount);
+    //       continue;
+    //     }
+
+    //     listOfRandomAddress.push(newAddress);
+
+    //     if (listOfRandomAddress.length === howMany) {
+    //       break;
+    //     }
+    //   }
+
+    //   if (listOfRandomAddress.length < howMany) {
+    //     throw new Error(
+    //       `Failed to generate ${howMany} random addresses within ${maxAttempts} attempts. Maximum attempts reached.`
+    //     );
+    //   }
+
+    //   return listOfRandomAddress;
+    // };
+
+    const ListOfRandomAddress = generateListOfRandomAddress(12, 6);
+    console.log(ListOfRandomAddress, "a");
+    if (ListOfRandomAddress === undefined) return;
+    ListOfRandomAddress.forEach((Address, i) => {
+      console.log(Address, "r", circleGrid.rows, "c", circleGrid.cols);
+      const position = circleGrid.getValue(Address.Row, Address.Col).pos;
+      const prevCircal = circleGrid.getValue(
+        ListOfRandomAddress[i + 1].Row,
+        ListOfRandomAddress[i + 1].Col
+      );
+      const instance = new Circle(
+        bgparent,
+        canvas,
+        position.X,
+        position.Y,
+        20,
+        outerRadius,
+        innerRadius,
+        color,
+        lineWidth,
+        lineColor,
+        [prevCircal.pos.X, prevCircal.pos.Y]
+      );
+      circleGrid.setValue(Address.Row, Address.Col, {
+        id: [Address.Col, Address.Row],
+        pos: {
+          X: position.X,
+          Y: position.Y,
+        },
+        instance: instance,
+      });
+    });
+
+    console.log(circleGrid);
   }
+
   window.addEventListener("resize", () => {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -240,8 +612,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     canvases.forEach((canvas) => {
       canvas.remove(); // remove each canvas element
     });
-    drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
+    drawCircleGrid(bgparent, canvas, 50, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
   });
-  drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
+  drawCircleGrid(bgparent, canvas, 50, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
 </script>
 <script></script>
