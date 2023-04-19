@@ -366,21 +366,45 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     const getRandomExcept = (
       input: number,
       maxlimit: number,
-      exclude: number
+      exclude: number,
+      rangePercent: number,
+      maxAttempts: number = 50
     ): number => {
-      // if (!Number.isInteger(input) || !Number.isInteger(maxlimit) || !Number.isInteger(exclude)) {
-      //   throw new Error("Invalid input: all inputs must be integers.");
-      // }
-      // if (input < 0 || input >= maxlimit || exclude < 0 || exclude >= maxlimit) {
-      //   throw new Error("Invalid input: input and exclude must be between 0 and maxlimit-1.");
-      // }
-
-      let randNum: number = Math.floor(Math.random() * (maxlimit - 2)) + 1;
-      if (randNum >= input) {
-        randNum++;
+      if (!Number.isFinite(rangePercent) || rangePercent < 0) {
+        throw new Error(
+          "Invalid input: rangePercent must be a number grater than 0 "
+        );
       }
-      if (randNum >= exclude) {
-        randNum++;
+
+      if (maxAttempts < 1) {
+        throw new Error(
+          "Invalid input: maxAttempts must be a positive integer."
+        );
+      }
+      let range: number;
+      if (rangePercent > 1) {
+        range = rangePercent;
+      } else {
+        range = Math.floor(maxlimit * rangePercent);
+      }
+      const lowerLimit = Math.max(0, input - range);
+      const upperLimit = Math.min(maxlimit - 1, input + range);
+      const rangeSize = upperLimit - lowerLimit + 1;
+
+      let randNum: number;
+      let attempts = 0;
+      do {
+        randNum = Math.floor(Math.random() * rangeSize) + lowerLimit;
+        attempts++;
+      } while (
+        (randNum === input || randNum === exclude) &&
+        attempts < maxAttempts
+      );
+
+      if (attempts === maxAttempts) {
+        throw new Error(
+          `Failed to generate a valid random number after ${maxAttempts} Attempts, input ${input},range ${rangePercent},maxlimit ${maxlimit} .`
+        );
       }
 
       return randNum;
@@ -437,13 +461,49 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       diagonalRow: number,
       mode: "Forward" | "Backward"
     ): number => {
+      if (
+        !origin ||
+        typeof origin.Row !== "number" ||
+        typeof origin.Col !== "number"
+      ) {
+        throw new Error("Invalid origin address");
+      }
+      if (
+        origin.Row < 0 ||
+        origin.Row >= gridSize.Rows ||
+        origin.Col < 0 ||
+        origin.Col >= gridSize.Cols
+      ) {
+        throw new Error("Invalid origin address: out of bounds");
+      }
+
+      if (
+        !gridSize ||
+        typeof gridSize.Rows !== "number" ||
+        typeof gridSize.Cols !== "number"
+      ) {
+        throw new Error("Invalid grid size");
+      }
+
+      if (
+        typeof diagonalRow !== "number" ||
+        diagonalRow < 0 ||
+        diagonalRow >= gridSize.Rows
+      ) {
+        throw new Error("Invalid diagonal row index");
+      }
+
+      if (mode !== "Forward" && mode !== "Backward") {
+        throw new Error("Invalid mode");
+      }
+
       const rowDiff = origin.Row - diagonalRow;
 
       let otherCellCol: number;
       if (mode === "Forward") {
-        otherCellCol = origin.Col + rowDiff;
-      } else if (mode === "Backward") {
         otherCellCol = origin.Col - rowDiff;
+      } else if (mode === "Backward") {
+        otherCellCol = origin.Col + rowDiff;
       } else {
         throw new Error(`Invalid mode: ${mode}`);
       }
@@ -470,16 +530,12 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       const getRandomAddressOnForwordDigonal = (): Address => {
         const newRow = getRandomExcept(
           address.Row,
-          Math.min(
-            range,
-            getForwardDiagonalLength(
-              circleGrid.rows,
-              circleGrid.cols,
-              address
-            ) - 1
-          ),
-          address.Row
+          getForwardDiagonalLength(circleGrid.rows, circleGrid.cols, address) -
+            1,
+          address.Row,
+          range
         );
+        console.log("a");
         const newAddress: Address = {
           Row: newRow,
           Col: calculateDiagonalCellCol(
@@ -494,15 +550,10 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       const getRandomAddressOnBackwordsDigonal = (): Address => {
         const newRow = getRandomExcept(
           address.Row,
-          Math.min(
-            range,
-            getBackwardDiagonalLength(
-              circleGrid.rows,
-              circleGrid.cols,
-              address
-            ) - 1
-          ),
-          address.Row
+          getBackwardDiagonalLength(circleGrid.rows, circleGrid.cols, address) -
+            1,
+          address.Row,
+          range
         );
         const newAddress: Address = {
           Row: newRow,
@@ -516,22 +567,25 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         return newAddress;
       };
       // Generate a random address based on the given range and the current address
+
+      // perpendicular
       if (randomZeroOrOne()) {
-        // perpendicular
         return randomZeroOrOne()
           ? {
               Row: address.Row,
               Col: getRandomExcept(
                 address.Col,
-                Math.min(range, circleGrid.cols - 1),
-                address.Col
+                circleGrid.cols, //Math.min(500, ),
+                address.Col,
+                range
               ),
             }
           : {
               Row: getRandomExcept(
                 address.Row,
-                Math.min(range, circleGrid.rows - 1),
-                address.Row
+                circleGrid.rows, //Math.min(500, circleGrid.rows - 1),
+                address.Row,
+                range
               ),
               Col: address.Col,
             };
@@ -613,7 +667,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
 
       const maxAttempts = 100; // set the maximum number of attempts
       let attemptCount = 0; // initialize the counter
-
+      console.log("max");
       function isCellOutOfBounds(cell: Address, gridSize: GridSize): boolean {
         return (
           cell.Row < 0 ||
@@ -628,8 +682,19 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         validAddressGenerated = false;
         attemptCount++;
         if (attemptCount === maxAttempts) {
+          const a = {
+            fr: listOfRandomAddress[0].Row,
+            fc: listOfRandomAddress[0].Col,
+            lr: listOfRandomAddress[listOfRandomAddress.length - 1].Row,
+            lc: listOfRandomAddress[listOfRandomAddress.length - 1].Col,
+          };
           throw new Error(
-            `Failed to generate ${howMany} random addresses within ${maxAttempts} attempts. Maximum attempts reached.`
+            `Failed to generate ${howMany} random addresses within ${maxAttempts} attempts. Maximum attempts reached current array is ${[
+              a.fc,
+              a.fc,
+              a.lr,
+              a.lc,
+            ]}.`
           );
         }
         const newAddress = genrateRandomAddress(
@@ -718,8 +783,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     }
 
     const ListOfRandomAddress = generateListOfRandomAddress(
-      24,
-      6,
+      12,
+      3,
       circleGrid.getRandomAddress()
     );
     console.log(ListOfRandomAddress, "a");
@@ -766,23 +831,54 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
                         }
                       },
                       (address) => {
-                        // const recursiveCreateCircles =()=>{
-                        //   createCircleGridValue(
-                        //   address,
-                        //   [address],
-                        //   (createdCircle) => {
-                        //     const gridValue = circleGrid.getValue(address.Row,address.Col)
-                        //     createdCircle.RequstShot(gridValue,{
-                        //       onReach:()=>{
-                        //       },
-                        //       speed: 300,
-                        //       duration: 1,
-                        //       durationTypeSpeed: true,
-                        //       onStart: () => {},
-                        //     })
-                        //   }
-                        // );
-                        // }
+                        const recursiveCreateCircles = (address: Address) => {
+                          createCircleGridValue(
+                            address,
+                            [address],
+                            (createdCircle) => {
+                              const NextAddress = generateListOfRandomAddress(
+                                3,
+                                3,
+                                address
+                              )[1];
+                              const nextCircle = circleGrid.getValue(
+                                NextAddress.Row,
+                                NextAddress.Col
+                              );
+                              createdCircle.shoot(nextCircle, {
+                                onReach: () => {
+                                  recursiveCreateCircles(NextAddress);
+                                  setTimeout(() => {
+                                    if (nextCircle.instance === null) return;
+                                    nextCircle.instance.GotShot(
+                                      () => {
+                                        try {
+                                          return generateListOfRandomAddress(
+                                            3,
+                                            3,
+                                            address
+                                          )[1];
+                                        } catch (error) {
+                                          console.log("brok");
+                                          return null;
+                                        }
+                                      },
+                                      (newaddress) => {
+                                        console.log("a0a0a");
+                                        recursiveCreateCircles(newaddress);
+                                      }
+                                    );
+                                  }, 5000);
+                                },
+                                speed: 100,
+                                duration: 1,
+                                durationTypeSpeed: true,
+                                onStart: () => {},
+                              });
+                            }
+                          );
+                        };
+                        recursiveCreateCircles(address);
                       }
                     );
                   }, 1500);
