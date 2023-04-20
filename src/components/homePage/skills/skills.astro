@@ -13,7 +13,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   <div class="h-[100vh]">
     <DemoThreejs />
   </div>
-  <div id="dottodot-parent" class="h-[100vh] relative">
+  <div id="dottodot-parent" class="h-[100vh] w-full relative">
     <div id="dottodot-line-parent" class="h-full w-full z-1 absolute"></div>
     <canvas id="dottodot" class="h-full w-full z-5 absolute"></canvas>
 
@@ -75,7 +75,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     public readonly color: string;
     public readonly lineWidth: number;
     public readonly lineColor: string;
-    public timeline: gsap.core.Timeline;
+    timeline: gsap.core.Timeline;
     public readonly animateToRadius: number;
     constructor(
       bgParent: HTMLDivElement,
@@ -87,8 +87,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       innerRadius: number,
       color: string,
       lineWidth: number,
-      lineColor: string
-
+      lineColor: string,
+      onComplete: () => void
       // to: [number, number]
     ) {
       (this.animateToRadius = animateToRadius), (this.canvas = canvas);
@@ -121,12 +121,14 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         },
         onComplete: () => {
           // const lineWidth = 20;
+          // this.context.clearRect(0, 0, 500, 500);
           this.context.clearRect(
-            this.x - animateToRadius - lineWidth,
-            this.y - animateToRadius - lineWidth,
-            animateToRadius * 2 + lineWidth * 2,
-            animateToRadius * 2 + lineWidth * 2
+            this.x - animateToRadius - this.lineWidth,
+            this.y - animateToRadius - this.lineWidth,
+            animateToRadius * 2 + this.lineWidth * 2,
+            animateToRadius * 2 + this.lineWidth * 2
           );
+          onComplete();
         },
       });
       this.animate(animateToRadius);
@@ -156,20 +158,10 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         speed: options.speed,
       });
     }
-    public GotShot(
-      findnext: () => Address | null,
-      createCircleInstance: (Address: Address) => void
-    ) {
+    public GotShot(runAfterPuse: () => void) {
       console.log("ab");
       this.timeline.pause();
-      let intervalId: number;
-      intervalId = setInterval(() => {
-        const creatNext = findnext();
-        if (creatNext === null) return;
-        createCircleInstance(creatNext);
-        this.timeline.resume();
-        clearInterval(intervalId);
-      }, 1500);
+      runAfterPuse();
     }
     private animate(to: number) {
       this.timeline
@@ -245,18 +237,16 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       });
       Drawline.to(line, {
         onComplete: () => {
+          if (options.onReach) {
+            options.onReach();
+          }
           // if (dist !== calculateDistance(line.XStart, line.YStart, to[0], to[1])) {return}
         },
         duration: duration, // dist / speed,
         XEnd: to[0],
         YEnd: to[1],
       }).to(line, {
-        onStart: () => {
-          if (options.onReach) {
-            options.onReach();
-          }
-        },
-        delay: 0.2,
+        onStart: () => {},
         onUpdate: () => {
           lineContext.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
         },
@@ -266,6 +256,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       });
     }
     private draw() {
+      // this.context.clearRect(0, 0, 500, 500);
       this.context.beginPath();
       this.context.arc(this.x, this.y, this.outerRadius, 0, 2 * Math.PI);
       this.context.fillStyle = this.color;
@@ -292,6 +283,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   class CircleGrid {
     private static instance: CircleGrid;
     private grid: Map<string, CircleGridValue>;
+    private onscreenInstances: Map<string, Circle>;
 
     private constructor(
       public readonly rows: number,
@@ -299,6 +291,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       public readonly spacing: number
     ) {
       this.grid = new Map();
+      this.onscreenInstances = new Map();
       this.spacing = spacing;
       for (let row = 0; row < this.rows; row++) {
         for (let col = 0; col < this.cols; col++) {
@@ -345,10 +338,206 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       return { Row: randomRow, Col: randomCol };
     }
 
+    public addOnscreenInstance(
+      row: number,
+      col: number,
+      instance: Circle
+    ): void {
+      const key = this.getAddressKey(row, col);
+      this.onscreenInstances.set(key, instance);
+    }
+
+    public removeOnscreenInstance(row: number, col: number): void {
+      const key = this.getAddressKey(row, col);
+      this.onscreenInstances.delete(key);
+    }
+
+    public getOnscreenInstance(row: number, col: number): Circle | undefined {
+      const key = this.getAddressKey(row, col);
+      return this.onscreenInstances.get(key);
+    }
+    public getRandomOnscreenInstance():
+      | { row: number; col: number; circle: Circle | undefined }
+      | undefined {
+      if (this.onscreenInstances.size > 0) {
+        const keys = Array.from(this.onscreenInstances.keys());
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const circle = this.onscreenInstances.get(randomKey);
+        if (circle) {
+          const [col, row] = randomKey.split(",").map(Number);
+          return { row, col, circle };
+        }
+      }
+      return undefined;
+    }
+
     private getAddressKey(row: number, col: number): string {
+      console.log("ii", this.onscreenInstances);
       return `${row},${col}`;
     }
   }
+
+  const getRandomExcept = (
+    input: number,
+    maxlimit: number,
+    exclude: number,
+    rangePercent: number,
+    maxAttempts: number = 50
+  ): number => {
+    if (!Number.isFinite(rangePercent) || rangePercent < 0) {
+      throw new Error(
+        "Invalid input: rangePercent must be a number grater than 0 "
+      );
+    }
+
+    if (maxAttempts < 1) {
+      throw new Error("Invalid input: maxAttempts must be a positive integer.");
+    }
+    let range: number;
+    if (rangePercent > 1) {
+      range = rangePercent;
+    } else {
+      range = Math.floor(maxlimit * rangePercent);
+    }
+    const lowerLimit = Math.max(0, input - range);
+    const upperLimit = Math.min(maxlimit - 1, input + range);
+    const rangeSize = upperLimit - lowerLimit + 1;
+
+    let randNum: number;
+    let attempts = 0;
+    do {
+      randNum = Math.floor(Math.random() * rangeSize) + lowerLimit;
+      attempts++;
+    } while (
+      (randNum === input || randNum === exclude) &&
+      attempts < maxAttempts
+    );
+
+    if (attempts === maxAttempts) {
+      throw new Error(
+        `Failed to generate a valid random number after ${maxAttempts} Attempts, input ${input},range ${rangePercent},maxlimit ${maxlimit} .`
+      );
+    }
+
+    return randNum;
+  };
+  const getForwardDiagonalLength = (
+    rows: number,
+    cols: number,
+    cellAddress: Address
+  ): number => {
+    const minDimension = Math.min(rows, cols);
+    let diagonalLength = 0;
+
+    if (cellAddress.Row <= cellAddress.Col) {
+      diagonalLength = Math.min(
+        minDimension,
+        cols - cellAddress.Col + cellAddress.Row
+      );
+    } else {
+      diagonalLength = Math.min(
+        minDimension,
+        rows - cellAddress.Row + cellAddress.Col
+      );
+    }
+
+    return diagonalLength;
+  };
+  const randomZeroOrOne = () => {
+    return Math.round(Math.random());
+  };
+  const randNum = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const getBackwardDiagonalLength = (
+    rows: number,
+    cols: number,
+    cellAddress: Address
+  ): number => {
+    const minDimension = Math.min(rows, cols);
+    let diagonalLength = 0;
+
+    // Determine the length of the diagonal based on the position of the cell within the grid.
+    if (cellAddress.Row + cellAddress.Col >= cols) {
+      diagonalLength = Math.min(
+        minDimension,
+        cols - cellAddress.Col + rows - cellAddress.Row
+      );
+    } else {
+      diagonalLength = Math.min(
+        minDimension,
+        cellAddress.Row + cellAddress.Col + 1
+      );
+    }
+
+    return diagonalLength;
+  };
+  const calculateDiagonalCellCol = (
+    origin: Address,
+    gridSize: GridSize,
+    diagonalRow: number,
+    mode: "Forward" | "Backward"
+  ): number => {
+    if (
+      !origin ||
+      typeof origin.Row !== "number" ||
+      typeof origin.Col !== "number"
+    ) {
+      throw new Error("Invalid origin address");
+    }
+    if (
+      origin.Row < 0 ||
+      origin.Row >= gridSize.Rows ||
+      origin.Col < 0 ||
+      origin.Col >= gridSize.Cols
+    ) {
+      throw new Error("Invalid origin address: out of bounds");
+    }
+
+    if (
+      !gridSize ||
+      typeof gridSize.Rows !== "number" ||
+      typeof gridSize.Cols !== "number"
+    ) {
+      throw new Error("Invalid grid size");
+    }
+
+    if (
+      typeof diagonalRow !== "number" ||
+      diagonalRow < 0 ||
+      diagonalRow >= gridSize.Rows
+    ) {
+      throw new Error("Invalid diagonal row index");
+    }
+
+    if (mode !== "Forward" && mode !== "Backward") {
+      throw new Error("Invalid mode");
+    }
+
+    const rowDiff = origin.Row - diagonalRow;
+
+    let otherCellCol: number = 0;
+    if (mode === "Forward") {
+      otherCellCol = origin.Col - rowDiff;
+    } else if (mode === "Backward") {
+      otherCellCol = origin.Col + rowDiff;
+    } else {
+      throw new Error(`Invalid mode: ${mode}`);
+    }
+
+    if (otherCellCol < 0 || otherCellCol >= gridSize.Cols) {
+      // throw new Error(
+      //   `Error: calculated column value is out of bounds,
+      //   ${otherCellCol}
+      //   ${gridSize.Rows},
+      //   ${origin.Row >= gridSize.Rows},
+      //   ${{ origin, diagonalRow }}`
+      // );
+    }
+
+    return otherCellCol;
+  };
 
   function drawCircleGrid(
     bgparent: HTMLDivElement,
@@ -363,169 +552,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     const numCols = Math.floor(canvas.width / spacing);
     const numRows = Math.floor(canvas.height / spacing);
     const circleGrid = CircleGrid.getInstance(numRows, numCols, spacing);
-    const getRandomExcept = (
-      input: number,
-      maxlimit: number,
-      exclude: number,
-      rangePercent: number,
-      maxAttempts: number = 50
-    ): number => {
-      if (!Number.isFinite(rangePercent) || rangePercent < 0) {
-        throw new Error(
-          "Invalid input: rangePercent must be a number grater than 0 "
-        );
-      }
 
-      if (maxAttempts < 1) {
-        throw new Error(
-          "Invalid input: maxAttempts must be a positive integer."
-        );
-      }
-      let range: number;
-      if (rangePercent > 1) {
-        range = rangePercent;
-      } else {
-        range = Math.floor(maxlimit * rangePercent);
-      }
-      const lowerLimit = Math.max(0, input - range);
-      const upperLimit = Math.min(maxlimit - 1, input + range);
-      const rangeSize = upperLimit - lowerLimit + 1;
-
-      let randNum: number;
-      let attempts = 0;
-      do {
-        randNum = Math.floor(Math.random() * rangeSize) + lowerLimit;
-        attempts++;
-      } while (
-        (randNum === input || randNum === exclude) &&
-        attempts < maxAttempts
-      );
-
-      if (attempts === maxAttempts) {
-        throw new Error(
-          `Failed to generate a valid random number after ${maxAttempts} Attempts, input ${input},range ${rangePercent},maxlimit ${maxlimit} .`
-        );
-      }
-
-      return randNum;
-    };
-
-    const getForwardDiagonalLength = (
-      rows: number,
-      cols: number,
-      cellAddress: Address
-    ): number => {
-      const minDimension = Math.min(rows, cols);
-      let diagonalLength = 0;
-
-      if (cellAddress.Row <= cellAddress.Col) {
-        diagonalLength = Math.min(
-          minDimension,
-          cols - cellAddress.Col + cellAddress.Row
-        );
-      } else {
-        diagonalLength = Math.min(
-          minDimension,
-          rows - cellAddress.Row + cellAddress.Col
-        );
-      }
-
-      return diagonalLength;
-    };
-    const getBackwardDiagonalLength = (
-      rows: number,
-      cols: number,
-      cellAddress: Address
-    ): number => {
-      const minDimension = Math.min(rows, cols);
-      let diagonalLength = 0;
-
-      // Determine the length of the diagonal based on the position of the cell within the grid.
-      if (cellAddress.Row + cellAddress.Col >= cols) {
-        diagonalLength = Math.min(
-          minDimension,
-          cols - cellAddress.Col + rows - cellAddress.Row
-        );
-      } else {
-        diagonalLength = Math.min(
-          minDimension,
-          cellAddress.Row + cellAddress.Col + 1
-        );
-      }
-
-      return diagonalLength;
-    };
-    const calculateDiagonalCellCol = (
-      origin: Address,
-      gridSize: GridSize,
-      diagonalRow: number,
-      mode: "Forward" | "Backward"
-    ): number => {
-      if (
-        !origin ||
-        typeof origin.Row !== "number" ||
-        typeof origin.Col !== "number"
-      ) {
-        throw new Error("Invalid origin address");
-      }
-      if (
-        origin.Row < 0 ||
-        origin.Row >= gridSize.Rows ||
-        origin.Col < 0 ||
-        origin.Col >= gridSize.Cols
-      ) {
-        throw new Error("Invalid origin address: out of bounds");
-      }
-
-      if (
-        !gridSize ||
-        typeof gridSize.Rows !== "number" ||
-        typeof gridSize.Cols !== "number"
-      ) {
-        throw new Error("Invalid grid size");
-      }
-
-      if (
-        typeof diagonalRow !== "number" ||
-        diagonalRow < 0 ||
-        diagonalRow >= gridSize.Rows
-      ) {
-        throw new Error("Invalid diagonal row index");
-      }
-
-      if (mode !== "Forward" && mode !== "Backward") {
-        throw new Error("Invalid mode");
-      }
-
-      const rowDiff = origin.Row - diagonalRow;
-
-      let otherCellCol: number;
-      if (mode === "Forward") {
-        otherCellCol = origin.Col - rowDiff;
-      } else if (mode === "Backward") {
-        otherCellCol = origin.Col + rowDiff;
-      } else {
-        throw new Error(`Invalid mode: ${mode}`);
-      }
-
-      if (otherCellCol < 0 || otherCellCol >= gridSize.Cols) {
-        console.error(
-          "Error: calculated column value is out of bounds",
-          otherCellCol,
-          gridSize.Rows,
-          origin.Row >= gridSize.Rows,
-          { origin, diagonalRow }
-        );
-      }
-
-      return otherCellCol;
-    };
-    const randomZeroOrOne = () => {
-      return Math.round(Math.random());
-    };
-    const randNum = (min: number, max: number) => {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
     const genrateRandomAddress = (range: number, address: Address): Address => {
       const getRandomAddressOnForwordDigonal = (): Address => {
         const newRow = getRandomExcept(
@@ -598,7 +625,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     const createCircleInstance = (
       bgparent: HTMLDivElement,
       canvas: HTMLCanvasElement,
-      position: { X: number; Y: number }
+      position: { X: number; Y: number },
+      onComplete: () => void
     ) => {
       return new Circle(
         bgparent,
@@ -610,7 +638,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         innerRadius,
         color,
         lineWidth,
-        lineColor
+        lineColor,
+        onComplete
       );
     };
     const createCircleGridValue = (
@@ -628,12 +657,33 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
         CircleAddress.Row,
         CircleAddress.Col
       ).pos;
-      const CircleInstance = createCircleInstance(bgparent, canvas, position);
+
+      const CircleInstance = createCircleInstance(
+        bgparent,
+        canvas,
+        position,
+        () => {
+          console.log("oaoa");
+          circleGrid.removeOnscreenInstance(
+            CircleAddress.Row,
+            CircleAddress.Col
+          );
+          circleGrid.setValue(CircleAddress.Row, CircleAddress.Col, {
+            id: [CircleAddress.Col, CircleAddress.Row],
+            pos: position,
+            instance: null,
+          });
+        }
+      );
+      // CircleInstance.timeline.eventCallback("onComplete", () => {
+      //
+      // });
       circleGrid.setValue(CircleAddress.Row, CircleAddress.Col, {
         id: [CircleAddress.Col, CircleAddress.Row],
         pos: position,
         instance: CircleInstance,
       });
+
       const gridValue = circleGrid.getValue(
         CircleAddress.Row,
         CircleAddress.Col
@@ -782,9 +832,59 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       return null;
     }
 
+    const runGetRandomOnscreenInstance = (): void => {
+      setInterval(() => {
+        const onscreenInstances = circleGrid.getRandomOnscreenInstance();
+        if (onscreenInstances === undefined) return;
+        const { row, col, circle } = onscreenInstances;
+        const AddressList = generateListOfRandomAddress(3, 3, {
+          Row: row,
+          Col: col,
+        });
+        const newCircleAddress = AddressList[1];
+        if (circle === undefined) return;
+        if (circleGrid.getValue(row, col).instance === null) return;
+        createCircleGridValue(
+          newCircleAddress,
+          AddressList,
+          (createdCircle) => {
+            createdCircle.RequstShot(
+              circleGrid.getValue(row, col), //newcircle
+              {
+                onReach: () => {
+                  if (createdCircle.timeline.progress() === 0.9) return;
+                  createdCircle.GotShot(() => {
+                    try {
+                      circleGrid.addOnscreenInstance(
+                        newCircleAddress.Row,
+                        newCircleAddress.Col,
+                        createdCircle
+                      );
+                      console.log("brokaa");
+                    } catch (error) {
+                      console.log("brok", error);
+                      return null;
+                    }
+                  });
+                },
+                speed: 100,
+                duration: 0.4,
+                durationTypeSpeed: true,
+                onStart: () => {
+                  circle.timeline.resume();
+                },
+              }
+            );
+            circle.timeline.resume();
+          }
+        );
+        onscreenInstances;
+      }, 10);
+    };
+
     const ListOfRandomAddress = generateListOfRandomAddress(
-      12,
-      3,
+      13,
+      6,
       circleGrid.getRandomAddress()
     );
     console.log(ListOfRandomAddress, "a");
@@ -817,21 +917,106 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
                   console.log(newCreatedCircle, "aut");
                   if (newCreatedCircle === null) return;
                   setTimeout(() => {
-                    newCreatedCircle.GotShot(
-                      () => {
-                        try {
-                          return generateListOfRandomAddress(
-                            0,
-                            3,
-                            nextAddress
-                          )[0];
-                        } catch (error) {
-                          console.log("brok");
-                          return null;
-                        }
-                      },
-                      (address) => {
-                        const recursiveCreateCircles = (address: Address) => {
+                    if (createdCircle.timeline.progress() === 0.9) return;
+                    newCreatedCircle.GotShot(() => {
+                      try {
+                        circleGrid.addOnscreenInstance(
+                          nextAddress.Row,
+                          nextAddress.Col,
+                          newCreatedCircle
+                        );
+                      } catch (error) {
+                        console.log("brok", error);
+                        return null;
+                      }
+                    });
+                  }, 1500);
+                },
+                speed: 300,
+                duration: 0.4,
+                durationTypeSpeed: false,
+                onStart: () => {},
+              }
+            );
+          }
+        );
+      };
+      recursiveCreateInitalCircles(seedCircleAddress);
+    };
+    //split array in tow
+    const firstHalf = ListOfRandomAddress.slice(
+      0,
+      Math.floor(ListOfRandomAddress.length / 2)
+    );
+    const secondHalf = ListOfRandomAddress.slice(
+      Math.floor(ListOfRandomAddress.length / 2)
+    );
+    //draw array seprately
+    createInitialCircles(firstHalf);
+    createInitialCircles(secondHalf);
+    runGetRandomOnscreenInstance();
+
+    // seedCircleInstance
+    // ListOfRandomAddress.forEach((Address, i) => { // remove this
+    //   console.log(Address, "r", circleGrid.rows, "c", circleGrid.cols);
+    //   const position = circleGrid.getValue(Address.Row, Address.Col).pos;
+    //   const prevCircal = circleGrid.getValue(
+    //     ListOfRandomAddress[i + 1].Row,
+    //     ListOfRandomAddress[i + 1].Col
+    //   );
+    //   const instance = new Circle(
+    //     bgparent,
+    //     canvas,
+    //     position.X,
+    //     position.Y,
+    //     20,
+    //     outerRadius,
+    //     innerRadius,
+    //     color,
+    //     lineWidth,
+    //     lineColor,
+    //     300,
+    //     [prevCircal.pos.X, prevCircal.pos.Y]
+    //   );
+    //   circleGrid.setValue(Address.Row, Address.Col, {
+    //     id: [Address.Col, Address.Row],
+    //     pos: {
+    //       X: position.X,
+    //       Y: position.Y,
+    //     },
+    //     instance: instance,
+    //   });
+    // });
+
+    console.log(circleGrid);
+  }
+
+  window.addEventListener("resize", () => {
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+    const canvases = document.querySelectorAll(".dottodot-background"); // get all canvas elements with the "dottodot-background" class
+    canvases.forEach((canvas) => {
+      canvas.remove(); // remove each canvas element
+    });
+    drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
+  });
+  drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
+</script>
+<script></script>
+
+<!-- given an  2d grid  with value type CircleGridValue = {
+  id: [number, number];
+  pos: { X: number; Y: number };
+  // paused: boolean ;
+  // canPause: boolean ;
+  instance: Circle | null;
+};  write a function in typescript that takes in a range value 'range', size of grid as type GridSize = {
+  Rows: number;
+  Cols: number;
+}; , an address of a cell on the grid as 
+type Address = { Row: number; Col: number }; and finds address of a grid
+
+  const recursiveCreateCircles = (address: Address) => {
                           createCircleGridValue(
                             address,
                             [address],
@@ -879,88 +1064,5 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
                           );
                         };
                         recursiveCreateCircles(address);
-                      }
-                    );
-                  }, 1500);
-                },
-                speed: 300,
-                duration: 0.4,
-                durationTypeSpeed: false,
-                onStart: () => {},
-              }
-            );
-          }
-        );
-      };
-      recursiveCreateInitalCircles(seedCircleAddress);
-    };
-    //split array in tow
-    const firstHalf = ListOfRandomAddress.slice(
-      0,
-      Math.floor(ListOfRandomAddress.length / 2)
-    );
-    const secondHalf = ListOfRandomAddress.slice(
-      Math.floor(ListOfRandomAddress.length / 2)
-    );
-    //draw array seprately
-    createInitialCircles(firstHalf);
-    createInitialCircles(secondHalf);
-    // seedCircleInstance
-    // ListOfRandomAddress.forEach((Address, i) => { // remove this
-    //   console.log(Address, "r", circleGrid.rows, "c", circleGrid.cols);
-    //   const position = circleGrid.getValue(Address.Row, Address.Col).pos;
-    //   const prevCircal = circleGrid.getValue(
-    //     ListOfRandomAddress[i + 1].Row,
-    //     ListOfRandomAddress[i + 1].Col
-    //   );
-    //   const instance = new Circle(
-    //     bgparent,
-    //     canvas,
-    //     position.X,
-    //     position.Y,
-    //     20,
-    //     outerRadius,
-    //     innerRadius,
-    //     color,
-    //     lineWidth,
-    //     lineColor,
-    //     300,
-    //     [prevCircal.pos.X, prevCircal.pos.Y]
-    //   );
-    //   circleGrid.setValue(Address.Row, Address.Col, {
-    //     id: [Address.Col, Address.Row],
-    //     pos: {
-    //       X: position.X,
-    //       Y: position.Y,
-    //     },
-    //     instance: instance,
-    //   });
-    // });
 
-    console.log(circleGrid);
-  }
-
-  window.addEventListener("resize", () => {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
-    const canvases = document.querySelectorAll(".dottodot-background"); // get all canvas elements with the "dottodot-background" class
-    canvases.forEach((canvas) => {
-      canvas.remove(); // remove each canvas element
-    });
-    drawCircleGrid(bgparent, canvas, 60, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
-  });
-  drawCircleGrid(bgparent, canvas, 60, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
-</script>
-<script></script>
-
-<!-- given an  2d grid  with value type CircleGridValue = {
-  id: [number, number];
-  pos: { X: number; Y: number };
-  // paused: boolean ;
-  // canPause: boolean ;
-  instance: Circle | null;
-};  write a function in typescript that takes in a range value 'range', size of grid as type GridSize = {
-  Rows: number;
-  Cols: number;
-}; , an address of a cell on the grid as 
-type Address = { Row: number; Col: number }; and finds address of a grid -->
+-->
