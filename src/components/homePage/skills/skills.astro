@@ -2,6 +2,7 @@
 import DemoThreejs from "./threejs/demoThreejs.astro";
 ---
 
+<script src="//unpkg.com/3d-force-graph"></script>
 <div class="skills">
   <div
     class="text-5xl mobile:text-4xl mobile:h-[30vh] h-[50vh] flex flex-col justify-center"
@@ -13,9 +14,10 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   <div class="h-[100vh]">
     <DemoThreejs />
   </div>
-  <div id="dottodot-parent" class="h-[100vh] w-full relative">
-    <div id="dottodot-line-parent" class="h-full w-full z-1 absolute"></div>
-    <canvas id="dottodot" class="h-full w-full z-5 absolute"></canvas>
+  <div id="dottodot-parent" class="h-[150vh] w-full relative">
+    <div id="3d-graph" style="height: 150vh;" class="h-[150vh]"></div>
+    <!-- <div id="dottodot-line-parent" class="h-full w-full z-1 absolute"></div>
+    <canvas id="dottodot" class="h-full w-full z-5 absolute"></canvas> -->
 
     <!-- <canvas id="" class="h-full w-full absolute"> </canvas> -->
   </div>
@@ -28,7 +30,225 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     position: absolute;
   }
 </style>
+
 <script>
+  import ForceGraph3D from "3d-force-graph";
+  import { Mesh, MeshLambertMaterial, SphereGeometry, Vector2 } from "three";
+
+  import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+
+  // Random tree
+  const NODES = 1000;
+  const GROUPS = 120;
+  const gData = {
+    nodes: [...Array(NODES).keys()].map((i) => ({
+      id: i,
+      group: Math.ceil(Math.random() * GROUPS),
+    })),
+    links: [...Array(NODES).keys()]
+      .filter((id) => id)
+      .map((id) => ({
+        source: id,
+        target: Math.round(Math.random() * (id - 1)),
+      })),
+  };
+  const distance = 1400;
+  const nodeMetrial = new MeshLambertMaterial({
+    color: "#3fd4d4",
+    emissive: "#3fd4d4",
+    emissiveIntensity: 1,
+    opacity: 1,
+  });
+
+  const getNodeMesh = () => {
+    return new Mesh(new SphereGeometry(5), nodeMetrial);
+  };
+
+  const graphDiv = document.getElementById("3d-graph") as HTMLDivElement;
+  const Graph = ForceGraph3D()(graphDiv)
+    .nodeThreeObject(() => getNodeMesh())
+    .linkOpacity(0.2)
+    .showNavInfo(false)
+    .zoomToFit()
+    .enablePointerInteraction(false)
+    .backgroundColor("#0e1212")
+    .cameraPosition({ z: distance })
+    .graphData(gData)
+    .nodeColor((node) => "#3fd4d4");
+  //@ts-ignore
+  Graph.controls().noZoom = true;
+  let angle = 0;
+  let isPaused = false;
+  let lastTime = 0;
+  let cameraPosBeforePause = { x: 0, y: 0, z: 0 };
+  const transitionDuration = 500; // in milliseconds
+
+  const animate = (currentTime: number) => {
+    const deltaTime = currentTime - lastTime;
+    if (!isPaused) {
+      Graph.cameraPosition({
+        x: distance * Math.sin(angle),
+        z: distance * Math.cos(angle),
+      });
+      angle += Math.PI / 300;
+    } else {
+      const timeSincePause = currentTime - lastTime;
+      if (timeSincePause <= transitionDuration) {
+        const t = timeSincePause / transitionDuration;
+        const cameraPosX =
+          cameraPosBeforePause.x +
+          t * (distance * Math.sin(angle) - cameraPosBeforePause.x);
+        const cameraPosZ =
+          cameraPosBeforePause.z +
+          t * (distance * Math.cos(angle) - cameraPosBeforePause.z);
+        Graph.cameraPosition({
+          x: cameraPosX,
+          z: cameraPosZ,
+        });
+      }
+    }
+    lastTime = currentTime;
+    requestAnimationFrame(animate);
+  };
+
+  const handleMouseDown = () => {
+    isPaused = true;
+    cameraPosBeforePause = Graph.cameraPosition();
+  };
+
+  const handleMouseUp = () => {
+    isPaused = false;
+    lastTime = performance.now();
+  };
+
+  document.addEventListener("mousedown", handleMouseDown);
+
+  document.addEventListener("mouseup", handleMouseUp);
+
+  requestAnimationFrame((currentTime) => {
+    lastTime = currentTime;
+    animate(currentTime);
+  });
+
+  // if
+
+  // .nodeLabel("id")
+  // .nodeAutoColorBy("group");
+  // window.on
+
+  // .nodeAutoColorBy("group");
+
+  const res = new Vector2(graphDiv.clientWidth, graphDiv.clientHeight);
+  const bloomPass = new UnrealBloomPass(res, 1, 1, 0.1);
+  bloomPass.radius = 1;
+  bloomPass.threshold = 0.1;
+
+  // Graph.postProcessingComposer().addPass(bloomPass);
+</script>
+<!-- <script>
+  import ForceGraph3D from "3d-force-graph";
+  import { Vector2 } from "three";
+  import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+
+  import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+
+  // Random tree
+  const NODES = 1000;
+  const GROUPS = 120;
+  const gData = {
+    nodes: [...Array(NODES).keys()].map((i) => ({
+      id: i,
+      group: Math.ceil(Math.random() * GROUPS),
+    })),
+    links: [...Array(NODES).keys()]
+      .filter((id) => id)
+      .map((id) => ({
+        source: id,
+        target: Math.round(Math.random() * (id - 1)),
+      })),
+  };
+  type link = {
+    source: number;
+    target: number;
+  };
+  type Data = {
+    links?: link[];
+    neighbors?: Data[];
+    id: number;
+    group: number;
+  };
+  gData.links.forEach((link) => {
+    const a: Data = gData.nodes[link.source];
+    const b: Data = gData.nodes[link.target];
+    !a.neighbors && (a.neighbors = []);
+    !b.neighbors && (b.neighbors = []);
+    a.neighbors.push(b);
+    b.neighbors.push(a);
+
+    !a.links && (a.links = []);
+    !b.links && (b.links = []);
+    a.links.push(link);
+    b.links.push(link);
+  });
+
+  const highlightNodes = new Set();
+  const highlightLinks = new Set();
+  let hoverNode: object | null = null;
+  const graphDiv = document.getElementById("3d-graph") as HTMLDivElement;
+
+  const Graph = ForceGraph3D()(graphDiv)
+    .graphData(gData)
+    .nodeColor((node) =>
+      highlightNodes.has(node)
+        ? node === hoverNode
+          ? "rgb(255,0,0,1)"
+          : "rgba(255,160,0,0.8)"
+        : "rgba(0,255,255,0.6)"
+    )
+    .linkWidth((link) => (highlightLinks.has(link) ? 4 : 1))
+    .linkDirectionalParticles((link) => (highlightLinks.has(link) ? 4 : 0))
+    .linkDirectionalParticleWidth(4)
+    .onNodeHover((node: any) => {
+      // no state change
+      if ((!node && !highlightNodes.size) || (node && hoverNode === node))
+        return;
+
+      highlightNodes.clear();
+      highlightLinks.clear();
+
+      if (node) {
+        highlightNodes.add(node);
+        node.neighbors.forEach((neighbor: any) => highlightNodes.add(neighbor));
+        node.links.forEach((link: any) => highlightLinks.add(link));
+      }
+
+      hoverNode = node || null;
+
+      updateHighlight();
+    })
+
+    .onLinkHover((link: any) => {
+      highlightNodes.clear();
+      highlightLinks.clear();
+
+      if (link) {
+        highlightLinks.add(link);
+        highlightNodes.add(link.source);
+        highlightNodes.add(link.target);
+      }
+
+      updateHighlight();
+    });
+
+  function updateHighlight() {
+    // trigger update of highlighted objects in scene
+    Graph.nodeColor(Graph.nodeColor())
+      // .backgroundColor("rgba(0,0,0,0")
+      .linkWidth(Graph.linkWidth())
+      .linkDirectionalParticles(Graph.linkDirectionalParticles());
+  }
+</script> -->
+<!-- <script>
   import gsap from "gsap";
 
   import type Index from "src/pages/index.astro";
@@ -372,7 +592,6 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     }
 
     private getAddressKey(row: number, col: number): string {
-      console.log("ii", this.onscreenInstances);
       return `${row},${col}`;
     }
   }
@@ -386,25 +605,30 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   ): number => {
     if (!Number.isFinite(rangePercent) || rangePercent < 0) {
       throw new Error(
-        "Invalid input: rangePercent must be a number grater than 0 "
+        "Invalid input: rangePercent must be a number greater than 0."
       );
     }
 
     if (maxAttempts < 1) {
       throw new Error("Invalid input: maxAttempts must be a positive integer.");
     }
-    let range: number;
+
+    let range: number = 3;
     if (rangePercent > 1) {
       range = rangePercent;
     } else {
       range = Math.floor(maxlimit * rangePercent);
     }
+
     const lowerLimit = Math.max(0, input - range);
     const upperLimit = Math.min(maxlimit - 1, input + range);
     const rangeSize = upperLimit - lowerLimit + 1;
 
-    let randNum: number;
+    let randNum: number | null = null;
     let attempts = 0;
+    const randomFactor = Math.random() > 0.5 ? 1 : -1;
+    let offset = randomFactor * Math.ceil(rangeSize / 2);
+
     do {
       randNum = Math.floor(Math.random() * rangeSize) + lowerLimit;
       attempts++;
@@ -413,14 +637,18 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       attempts < maxAttempts
     );
 
-    if (attempts === maxAttempts) {
+    if (attempts === maxAttempts && randNum === null) {
+      if (randNum === null) {
+        console.log("nill", randNum);
+      }
       throw new Error(
-        `Failed to generate a valid random number after ${maxAttempts} Attempts, input ${input},range ${rangePercent},maxlimit ${maxlimit} .`
+        `Failed to generate a valid random number after ${maxAttempts} attempts, input ${input}, range ${rangePercent}, maxlimit ${maxlimit}.`
       );
     }
 
     return randNum;
   };
+
   const getForwardDiagonalLength = (
     rows: number,
     cols: number,
@@ -441,7 +669,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       );
     }
 
-    return diagonalLength;
+    return diagonalLength - 1;
   };
   const randomZeroOrOne = () => {
     return Math.round(Math.random());
@@ -471,7 +699,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       );
     }
 
-    return diagonalLength;
+    return diagonalLength - 1;
   };
   const calculateDiagonalCellCol = (
     origin: Address,
@@ -492,7 +720,9 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
       origin.Col < 0 ||
       origin.Col >= gridSize.Cols
     ) {
-      throw new Error("Invalid origin address: out of bounds");
+      throw new Error(
+        `Invalid origin "col:"${origin.Col} row:${origin.Row} address: out of bounds`
+      );
     }
 
     if (
@@ -555,14 +785,17 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
 
     const genrateRandomAddress = (range: number, address: Address): Address => {
       const getRandomAddressOnForwordDigonal = (): Address => {
-        const newRow = getRandomExcept(
-          address.Row,
-          getForwardDiagonalLength(circleGrid.rows, circleGrid.cols, address) -
-            1,
-          address.Row,
-          range
+        const forwardDiagonalLength = getForwardDiagonalLength(
+          circleGrid.rows,
+          circleGrid.cols,
+          address
         );
-        console.log("a");
+        const maxRow = Math.min(
+          circleGrid.rows - 1,
+          address.Row + range,
+          address.Row + forwardDiagonalLength - 1
+        );
+        const newRow = getRandomExcept(address.Row, maxRow, 0, range);
         const newAddress: Address = {
           Row: newRow,
           Col: calculateDiagonalCellCol(
@@ -572,27 +805,33 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
             "Forward"
           ),
         };
+        console.log(newAddress, "newAddress");
         return newAddress;
       };
       const getRandomAddressOnBackwordsDigonal = (): Address => {
-        const newRow = getRandomExcept(
-          address.Row,
-          getBackwardDiagonalLength(circleGrid.rows, circleGrid.cols, address) -
-            1,
-          address.Row,
-          range
+        const backwardDiagonalLength = getBackwardDiagonalLength(
+          circleGrid.rows,
+          circleGrid.cols,
+          address
         );
+        const maxRow = Math.min(
+          circleGrid.rows - 1,
+          address.Row + range,
+          circleGrid.rows - 1 - backwardDiagonalLength + address.Row
+        );
+        const newRow = getRandomExcept(address.Row, maxRow, address.Row, range);
         const newAddress: Address = {
           Row: newRow,
           Col: calculateDiagonalCellCol(
-            address,
+            { Row: newRow, Col: address.Col },
             { Rows: circleGrid.rows, Cols: circleGrid.cols },
-            newRow,
+            circleGrid.rows - 1 - newRow,
             "Backward"
           ),
         };
         return newAddress;
       };
+
       // Generate a random address based on the given range and the current address
 
       // perpendicular
@@ -879,7 +1118,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
           }
         );
         onscreenInstances;
-      }, 10);
+      }, 500);
     };
 
     const ListOfRandomAddress = generateListOfRandomAddress(
@@ -1001,8 +1240,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
   });
   drawCircleGrid(bgparent, canvas, 70, 0, 0, "#3fd4d4", 10, "rgb(14 18 18)");
-</script>
-<script></script>
+</script> -->
 
 <!-- given an  2d grid  with value type CircleGridValue = {
   id: [number, number];
