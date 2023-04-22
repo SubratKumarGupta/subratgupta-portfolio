@@ -2,7 +2,7 @@
 const pages = ["home", "about", "blog", "contact"];
 ---
 
-<div class="text-2xl">
+<div class="text-2xl mobile:text-[10vw] mobile:w-full">
   {
     pages.map((pageName) => (
       // {if(pageName)}
@@ -19,20 +19,23 @@ const pages = ["home", "about", "blog", "contact"];
         <div
           data-value-hover={"click(" + pageName + ")"}
           date-value={pageName}
-          class=" mt-4 ml-3 text-white group cursor-pointer"
+          class=" mt-4 mobile:mt-10 ml-3 text-white group cursor-pointer"
         >
           <div class="flex w-fit">
             <span class={`prefix text-primary-teal group-hover:hidden`}>
-              --
+              <div class="mobile:hidden">--</div>
+              <div class="desktop:hidden"> {"/ "} </div>
             </span>
             <span
-              class={`hov-prefix  w-0 opacity-0  text-primary-teal group-hover:animate-showClick `}
+              class={`hov-prefix  w-0 opacity-0  text-primary-teal desktop:group-hover:animate-showClick 
+                mobile:group-hover:opacity-100 mobile:group-hover:w-full  `}
             >
               {"click("}
             </span>
             <span class="navLink">{pageName}</span>
             <span
-              class={`hov-suffix w-0 opacity-0   text-primary-teal group-hover:animate-showClick `}
+              class={`hov-suffix w-0 opacity-0   text-primary-teal desktop:group-hover:animate-showClick 
+                 mobile:group-hover:opacity-100 mobile:group-hover:w-full `}
             >
               {")"}
             </span>

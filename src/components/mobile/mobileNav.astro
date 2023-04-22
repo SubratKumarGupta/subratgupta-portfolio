@@ -1,0 +1,95 @@
+---
+import Nav from "../Sidebar/nav.astro";
+---
+
+<div
+  id="toggelBtn"
+  data-state="acative"
+  class="font-bold text-4xl absolute z-50 top-0 right-0 pt-2 pr-4 desktop:hidden"
+>
+  <div class="sticky top-0">
+    <div id="icon-open" class="">
+      <span class="text-primary-teal duration-500 transition-all">.</span>/
+    </div>
+    <div id="icon-close" class="ml-5 opacity-0 h-0 transition-all duration-500">
+      <span class="absolute">/</span>
+      <span class="absolute text-primary-teal">\</span>
+    </div>
+  </div>
+</div>
+<div
+  id="nav-wrapper"
+  class="h-screen w-screen top-0 right-0 absolute z-40 bg-black opacity-0 pointer-events-none"
+>
+  <div class="h-full w-full flex justify-center items-center">
+    <Nav />
+  </div>
+</div>
+<style>
+  @keyframes animateManue {
+    0% {
+      height: 0;
+      opacity: 0;
+    }
+
+    100% {
+      height: auto;
+      opacity: 1;
+    }
+  }
+  @keyframes animateIn {
+    0% {
+      pointer-events: none;
+      opacity: 0;
+      clip-path: circle(0% at 150% 0%);
+    }
+
+    100% {
+      pointer-events: auto;
+      opacity: 0.9;
+      clip-path: circle(150%);
+    }
+  }
+  .icon-acative {
+    animation-name: animateManue;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    transform-origin: center center;
+  }
+  .icon-deacative {
+    animation-name: animateManue;
+    animation-duration: 1s;
+    animation-fill-mode: reverse;
+    transform-origin: center center;
+  }
+  .hide {
+    height: 0;
+    opacity: 0;
+  }
+  #nav-wrapper {
+  }
+  .nav-wrapper-acative {
+    animation-name: animateIn;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    transform-origin: top right;
+  }
+</style>
+<script>
+  const toggelIconOpen = document.getElementById("icon-open") as HTMLDivElement;
+  const toggelIconClose = document.getElementById(
+    "icon-close"
+  ) as HTMLDivElement;
+
+  const toggelBtn = document.getElementById("toggelBtn") as HTMLDivElement;
+  const navWrapper = document.getElementById("nav-wrapper") as HTMLDivElement;
+  toggelBtn.addEventListener("click", () => {
+    navWrapper.classList.toggle("nav-wrapper-acative");
+    toggelIconClose.classList.toggle("opacity-100"); //
+    toggelIconClose.classList.toggle("h-fit");
+    toggelIconOpen.classList.toggle("opacity-0");
+    toggelIconOpen.classList.toggle("h-0");
+
+    // navWrapper.classList.toggle("nav-wrapper-deactive");
+  });
+</script>

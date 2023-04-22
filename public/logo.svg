@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox=" -23 -60 100 100">
+   <text x="-20" y="18"   fill="#00ffff" class="t dot">.</text>
+  <text x="36" y="54"    fill="#ffffff" class="t slash">/</text>
+	<style>
+    .t{
+      font-family: "Roboto Mono";
+      font-size:5rem;
+    }
+    .dot{
+      fill:#3fd4d4;
+      font-size:250px;
+    }
+
+    .slash{
+      font-size:200px;
+      fill:#808080
+    }
+   @media (prefers-color-scheme:light){.slash{filter:invert(100%)}}
+
+  </style>
+</svg>

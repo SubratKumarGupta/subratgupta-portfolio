@@ -3,7 +3,8 @@ module.exports = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     screens: {
-      mobile: { raw: "(orientation: portrait)" }, //min: "300px", max: "999px" },
+      mobile: { raw: "(orientation: portrait)" },
+      desktop: { raw: "(orientation: landscape)" }, //min: "300px", max: "999px" },
     },
     fontFamily: {
       // font-family: "Times New Roman", Times, serif;
