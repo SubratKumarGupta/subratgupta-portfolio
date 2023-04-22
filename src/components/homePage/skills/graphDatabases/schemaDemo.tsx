@@ -1,8 +1,3 @@
-import {
-  EmbeddedGraphQLEditor,
-  GraphQLGqlEditor,
-  PassedSchema,
-} from "graphql-editor";
 import { useState } from "react";
 const schema = `
 type Query{
@@ -23,11 +18,11 @@ export const EmbeddedEditor = () => {
         position: "relative",
       }}
     >
-      <GraphQLGqlEditor
+      {/* <GraphQLGqlEditor
         gql={""}
         setGql={(gqlString) => setGql(gqlString)}
         schema={{ code: schema }}
-      />
+      /> */}
     </div>
   );
 };
