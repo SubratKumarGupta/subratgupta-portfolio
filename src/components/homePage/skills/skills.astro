@@ -18,11 +18,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   </div>
 </div>
 <style>
-  .dottodot-backgound {
-    height: 100%;
-    width: 100%;
-    background: #000;
-    position: absolute;
+  .pointer-events-none {
+    pointer-events: none;
   }
 </style>
 
@@ -60,6 +57,8 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
 
   const graphDiv = document.getElementById("3d-graph") as HTMLDivElement;
   const Graph = ForceGraph3D()(graphDiv)
+    .width(graphDiv.clientWidth)
+    .height(graphDiv.clientHeight)
     .nodeThreeObject(() => getNodeMesh())
     .linkOpacity(0.2)
     .showNavInfo(false)
@@ -76,7 +75,35 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   let lastTime = 0;
   let cameraPosBeforePause = { x: 0, y: 0, z: 0 };
   const transitionDuration = 500; // in milliseconds
+  // controls.enabled = false;
+  console.log(navigator);
+  const isMobileOrTablet =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  if (isMobileOrTablet) {
+    // @ts-ignore
+    Graph.controls().enabled = false;
+    graphDiv.classList.add("pointer-events-none");
+  }
+  console.log(isMobileOrTablet);
 
+  window.addEventListener("resize", () => {
+    Graph.width(graphDiv.clientWidth)
+      .height(graphDiv.clientHeight)
+      .renderer()
+      .setSize(graphDiv.clientWidth, graphDiv.clientHeight);
+
+    console.log(isMobileOrTablet);
+    if (isMobileOrTablet) {
+      // @ts-ignore
+      Graph.controls().enabled = false;
+      graphDiv.classList.add("pointer-events-none");
+    } else {
+      // @ts-ignore
+      Graph.controls().enabled = true;
+    }
+  });
   const animate = (currentTime: number) => {
     const deltaTime = currentTime - lastTime;
     if (!isPaused) {
