@@ -27,23 +27,26 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   import ForceGraph3D from "3d-force-graph";
   import { Mesh, MeshLambertMaterial, SphereGeometry, Vector2 } from "three";
   import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
-
+  const isMobileOrTablet =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Touch|Opera Mini/i.test(
+      navigator.userAgent
+    );
   // Random tree
-  // const NODES = 400;
-  // const GROUPS = 12;
-  // const gData = {
-  //   nodes: [...Array(NODES).keys()].map((i) => ({
-  //     id: i,
-  //     group: Math.ceil(Math.random() * GROUPS),
-  //   })),
-  //   links: [...Array(NODES).keys()]
-  //     .filter((id) => id)
-  //     .map((id) => ({
-  //       source: id,
-  //       target: Math.round(Math.random() * (id - 1)),
-  //     })),
-  // };
-  // console.log(gData);
+  const NODES = 400;
+  const GROUPS = 12;
+  const gData = {
+    nodes: [...Array(NODES).keys()].map((i) => ({
+      id: i,
+      group: Math.ceil(Math.random() * GROUPS),
+    })),
+    links: [...Array(NODES).keys()]
+      .filter((id) => id)
+      .map((id) => ({
+        source: id,
+        target: Math.round(Math.random() * (id - 1)),
+      })),
+  };
+  console.log(gData);
   const distance = 1400;
   const nodeMetrial = new MeshLambertMaterial({
     color: "#3fd4d4",
@@ -58,7 +61,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
 
   const graphDiv = document.getElementById("3d-graph") as HTMLDivElement;
   const Graph = ForceGraph3D()(graphDiv)
-    .jsonUrl("/dataset.json")
+    // .jsonUrl("/dataset.json")
     .width(graphDiv.clientWidth)
     .height(graphDiv.clientHeight)
     .nodeThreeObject(() => getNodeMesh())
@@ -68,7 +71,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
     .enablePointerInteraction(false)
     .backgroundColor("rgba(0,0,0,0)")
     .cameraPosition({ z: distance })
-    // .graphData(gdata)
+    .graphData(gData)
     .nodeColor((node) => "#3fd4d4");
   //@ts-ignore
   Graph.controls().noZoom = true;
@@ -79,10 +82,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   const transitionDuration = 500; // in milliseconds
   // controls.enabled = false;
   console.log(navigator);
-  const isMobileOrTablet =
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Touch|Opera Mini/i.test(
-      navigator.userAgent
-    );
+
   if (isMobileOrTablet) {
     // @ts-ignore
     Graph.controls().enabled = false;
