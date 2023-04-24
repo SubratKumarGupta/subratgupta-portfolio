@@ -1,5 +1,5 @@
 ---
-// import MobileNav from "src/components/mobile/mobileNav.astro";
+import MobileNav from "src/components/mobile/mobileNav.astro";
 ---
 
 <!DOCTYPE html>
@@ -19,7 +19,15 @@
     ></script>
   </head>
   <body>
-    <!-- <MobileNav /> -->
+    <a href="/">
+      <div
+        id="icon-open"
+        class="ml-5 font-bold text-4xl cursor-pointer absolute z-50 top-0 right-0 pt-2 pr-4"
+      >
+        <span class="text-primary-teal duration-500 transition-all">.</span>/
+      </div>
+    </a>
+
     <div id="voyager" class="bg-white"></div>
     <script is:inline>
       function introspectionProvider() {

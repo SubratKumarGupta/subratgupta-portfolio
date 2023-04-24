@@ -20,7 +20,7 @@ const { title } = Astro.props;
   </head>
   <body>
     <main class="flex text-white overflow-x-hidden h-[100vh]">
-      <MobileNav />
+      <MobileNav displayDesktop={false} />
 
       <div class="mobile:hidden">
         <SideBar body="" title="" />
