@@ -1,7 +1,9 @@
 {
-  "extends": "astro/tsconfigs/strict",
+  "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
+    "strictNullChecks": true,
     "jsx": "react-jsx",
+    "allowJs": true,
     "ignoreDeprecations": "5.0",
     "jsxImportSource": "react",
     "baseUrl": ".",

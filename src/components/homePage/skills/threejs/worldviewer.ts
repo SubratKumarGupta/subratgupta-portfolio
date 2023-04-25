@@ -1,5 +1,5 @@
 window.requestIdleCallback(async () => {
-  const { Power4, gsap } = await import("gsap");
+  const { gsap } = await import("gsap");
   const {
     Mesh,
     MeshBasicMaterial,

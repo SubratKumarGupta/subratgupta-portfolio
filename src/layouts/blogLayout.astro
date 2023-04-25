@@ -1,0 +1,578 @@
+---
+import type { MarkdownHeading } from "astro";
+import type { CollectionEntry } from "astro:content";
+import HeadCommon from "../components/blog/HeadCommon.astro";
+// import HeadSEO from "../components/blog/HeadSEO.astro";
+import Header from "../components/blog/header/header.astro";
+import PageContent from "../components/blog/pageContent/PageContent.astro";
+// import LeftSidebar from '../components/LeftSidebar/LeftSidebar.astro';
+import RightSidebar from "../components/blog/RightSidebar/RightSidebar.astro";
+import Footer from "../components/blog/footer/footer.astro";
+import { GITHUB_EDIT_URL, SITE } from "../consts";
+import "../components/blog/styles/theme.css";
+import "../components/blog/styles/index.css";
+
+type Props = CollectionEntry<"blog">["data"] & {
+  headings: MarkdownHeading[];
+};
+
+const { headings, ...data } = Astro.props;
+// const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const currentPage = Astro.url.pathname;
+const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
+const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
+---
+
+<html dir={data.dir} lang={data.lang} class="initial">
+  <head>
+    <HeadCommon />
+    <!-- <HeadSEO {...data} canonicalUrl={canonicalURL} /> -->
+    <title>
+      {`${data.title} 🚀 ${SITE.title}`}
+    </title>
+    <style>
+      body {
+        width: 100%;
+        display: grid;
+        grid-template-rows: var(--theme-navbar-height) 1fr;
+        --gutter: 0.5rem;
+        --doc-padding: 2rem;
+      }
+
+      .layout {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: 0 minmax(0, 100%);
+
+        overflow-x: hidden;
+      }
+
+      .grid-sidebar {
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        padding: 0;
+      }
+
+      #grid-main {
+        padding: var(--doc-padding) var(--gutter);
+        grid-column: 2;
+        padding-left: 2rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      #grid-right {
+        /* display: none; */
+        display: flex;
+        padding-left: 2rem;
+        position: sticky;
+        grid-column: 1;
+      }
+
+      @media (min-width: 50em) {
+        .layout {
+          overflow: initial;
+          grid-template-columns: 0 minmax(0, 100%);
+          gap: 1em;
+        }
+
+        #grid-left {
+          display: flex;
+          padding-left: 2rem;
+          position: sticky;
+          grid-column: 1;
+        }
+      }
+
+      @media (min-width: 72em) {
+        .layout {
+          grid-template-columns: 0 minmax(0, 70%);
+          padding-left: 0;
+          padding-right: 0;
+          margin: 0 auto;
+          width: 100%;
+        }
+
+        #grid-right {
+          grid-column: 3;
+          display: flex;
+        }
+      }
+    </style>
+    <style is:global>
+      .layout > * {
+        width: 100%;
+        height: 100%;
+      }
+
+      .mobile-sidebar-toggle {
+        overflow: hidden;
+      }
+
+      .mobile-sidebar-toggle #grid-left {
+        display: block;
+        top: 2rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <Header currentPage={currentPage} />
+    <main class="layout bg-primary-Dark">
+      <!-- <aside id="grid-left" class="grid-sidebar" title="Site Navigation">
+				<LeftSidebar currentPage={currentPage} />
+			</aside> -->
+      <div id="grid-main">
+        <PageContent
+          title={data.title}
+          headings={headings}
+          githubEditUrl={githubEditUrl}
+        >
+          <slot />
+        </PageContent>
+      </div>
+      <aside id="grid-right" class="grid-sidebar" title="Table of Contents">
+        <RightSidebar headings={headings} githubEditUrl={githubEditUrl} />
+      </aside>
+      <style is:inline>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+        }
+
+        /* Global focus outline reset */
+        *:focus:not(:focus-visible) {
+          outline: none;
+        }
+
+        :root {
+          --user-font-scale: 1rem - 16px;
+          --max-width: calc(100% - 1rem);
+        }
+
+        @media (min-width: 50em) {
+          :root {
+            --max-width: 46em;
+          }
+        }
+
+        body {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          font-family: var(--font-body);
+          font-size: 1rem;
+          font-size: clamp(
+            0.9rem,
+            0.75rem + 0.375vw + var(--user-font-scale),
+            1rem
+          );
+          line-height: 1.5;
+          max-width: 100vw;
+        }
+
+        nav ul {
+          list-style: none;
+          padding: 0;
+        }
+
+        .content > section > * + * {
+          margin-top: 1.25rem;
+        }
+
+        .content > section > :first-child {
+          margin-top: 0;
+        }
+
+        /* Typography */
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          margin-bottom: 1rem;
+          font-weight: bold;
+          line-height: 1;
+        }
+
+        h1,
+        h2 {
+          max-width: 40ch;
+        }
+
+        :is(h2, h3):not(:first-child) {
+          margin-top: 3rem;
+        }
+
+        :is(h4, h5, h6):not(:first-child) {
+          margin-top: 2rem;
+        }
+
+        h1 {
+          font-size: 3.25rem;
+          font-weight: 800;
+        }
+
+        h2 {
+          font-size: 2.5rem;
+        }
+
+        h3 {
+          font-size: 1.75rem;
+        }
+
+        h4 {
+          font-size: 1.3rem;
+        }
+
+        h5 {
+          font-size: 1rem;
+        }
+
+        p {
+          line-height: 1.65em;
+        }
+
+        .content ul {
+          line-height: 1.1em;
+        }
+
+        p,
+        .content ul {
+          color: var(--theme-text-light);
+        }
+
+        small,
+        .text_small {
+          font-size: 0.833rem;
+        }
+
+        a {
+          color: var(--theme-text-accent);
+          font-weight: 400;
+          text-underline-offset: 0.08em;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        article > section :is(ul, ol) > * + * {
+          margin-top: 0.75rem;
+        }
+
+        article > section nav :is(ul, ol) > * + * {
+          margin-top: inherit;
+        }
+
+        article > section li > :is(p, pre, blockquote):not(:first-child) {
+          margin-top: 1rem;
+        }
+
+        article > section :is(ul, ol) {
+          padding-left: 1em;
+        }
+
+        article > section nav :is(ul, ol) {
+          padding-left: inherit;
+        }
+
+        article > section nav {
+          margin-top: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        article > section ::marker {
+          font-weight: bold;
+          color: var(--theme-text-light);
+        }
+
+        article > section iframe {
+          width: 100%;
+          height: auto;
+          aspect-ratio: 16 / 9;
+        }
+
+        a > code {
+          position: relative;
+          color: var(--theme-text-accent);
+          background: transparent;
+          text-underline-offset: var(--padding-block);
+        }
+
+        a > code::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          display: block;
+          background: var(--theme-accent);
+          opacity: var(--theme-accent-opacity);
+          border-radius: var(--border-radius);
+        }
+
+        a:hover,
+        a:focus {
+          text-decoration: underline;
+        }
+
+        a:focus {
+          outline: 2px solid currentColor;
+          outline-offset: 0.25em;
+        }
+
+        strong {
+          font-weight: 600;
+          color: inherit;
+        }
+
+        /* Supporting Content */
+
+        code {
+          --border-radius: 3px;
+          --padding-block: 0.2rem;
+          --padding-inline: 0.33rem;
+
+          font-family: var(--font-mono);
+          font-size: 0.85em;
+          color: inherit;
+          background-color: var(--theme-code-inline-bg);
+          padding: var(--padding-block) var(--padding-inline);
+          margin: calc(var(--padding-block) * -1) -0.125em;
+          border-radius: var(--border-radius);
+          word-break: break-word;
+        }
+
+        pre.astro-code > code {
+          all: unset;
+        }
+
+        pre > code {
+          font-size: 1em;
+        }
+
+        table,
+        pre {
+          position: relative;
+          --padding-block: 1rem;
+          --padding-inline: 2rem;
+          padding: var(--padding-block) var(--padding-inline);
+          padding-right: calc(var(--padding-inline) * 2);
+          margin-left: calc(var(--padding-inline) * -1);
+          margin-right: calc(var(--padding-inline) * -1);
+          font-family: var(--font-mono);
+
+          line-height: 1.5;
+          font-size: 0.85em;
+          overflow-y: hidden;
+          overflow-x: auto;
+        }
+
+        table {
+          width: 100%;
+          padding: var(--padding-block) 0;
+          margin: 0;
+          border-collapse: collapse;
+        }
+
+        /* Zebra striping */
+        tr:nth-of-type(odd) {
+          background: var(--theme-bg-hover);
+        }
+        th {
+          background: var(--color-black);
+          color: var(--theme-color);
+          font-weight: bold;
+        }
+        td,
+        th {
+          padding: 6px;
+          text-align: left;
+        }
+
+        pre {
+          background-color: var(--theme-code-bg);
+          color: var(--theme-code-text);
+        }
+
+        blockquote code {
+          background-color: var(--theme-bg);
+        }
+
+        @media (min-width: 37.75em) {
+          pre {
+            --padding-inline: 1.25rem;
+            border-radius: 8px;
+            margin-left: 0;
+            margin-right: 0;
+          }
+        }
+
+        blockquote {
+          margin: 2rem 0;
+          padding: 1.25em 1.5rem;
+          border-left: 3px solid var(--theme-text-light);
+          background-color: var(--theme-bg-offset);
+          border-radius: 0 0.25rem 0.25rem 0;
+          line-height: 1.7;
+        }
+
+        img {
+          max-width: 100%;
+        }
+
+        .flex {
+          display: flex;
+          align-items: center;
+        }
+
+        button {
+          display: flex;
+          align-items: center;
+          justify-items: center;
+          gap: 0.25em;
+          padding: 0.33em 0.67em;
+          border: 0;
+          background: var(--theme-bg);
+          display: flex;
+          font-size: 1rem;
+          align-items: center;
+          gap: 0.25em;
+          border-radius: 99em;
+          color: var(--theme-text);
+          background-color: var(--theme-bg);
+        }
+
+        h2.heading {
+          font-size: 1rem;
+          font-weight: 700;
+          padding: 0.1rem 1rem;
+          text-transform: uppercase;
+          margin-bottom: 0.5rem;
+        }
+
+        .header-link {
+          font-size: 1em;
+          transition: border-inline-start-color 100ms ease-out,
+            background-color 200ms ease-out;
+          border-left: 4px solid var(--theme-divider);
+        }
+
+        .header-link a {
+          display: inline-flex;
+          gap: 0.5em;
+          width: 100%;
+          font: inherit;
+          padding: 0.4rem 0;
+          line-height: 1.3;
+          color: inherit;
+          text-decoration: none;
+          unicode-bidi: plaintext;
+        }
+
+        @media (min-width: 50em) {
+          .header-link a {
+            padding: 0.275rem 0;
+          }
+        }
+
+        .header-link:hover,
+        .header-link:focus,
+        .header-link:focus-within {
+          border-inline-start-color: var(--theme-accent-secondary);
+        }
+
+        .header-link:hover a,
+        .header-link a:focus {
+          color: var(--theme-text);
+          text-decoration: underline;
+        }
+        .header-link svg {
+          opacity: 0.6;
+        }
+        .header-link:hover svg {
+          opacity: 0.8;
+        }
+
+        /* Add line and padding on the left side */
+        .header-link {
+          padding-inline-start: 1rem;
+        }
+        .header-link.depth-3 {
+          padding-inline-start: 2rem;
+        }
+        .header-link.depth-4 {
+          padding-inline-start: 3rem;
+        }
+
+        /* Screenreader Only Text */
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
+        .focus\:not-sr-only:focus,
+        .focus\:not-sr-only:focus-visible {
+          position: static;
+          width: auto;
+          height: auto;
+          padding: 0;
+          margin: 0;
+          overflow: visible;
+          clip: auto;
+          white-space: normal;
+        }
+
+        :target {
+          scroll-margin: calc(var(--theme-sidebar-offset, 5rem) + 2rem) 0 2rem;
+        }
+
+        /* Highlight TOC header link matching the current scroll position */
+        .current-header-link {
+          background-color: var(--theme-bg-accent);
+          /* Indicates the current heading for forced colors users in older browsers */
+          outline: 1px solid transparent;
+        }
+
+        @media (forced-colors: active) {
+          .current-header-link {
+            border: 1px solid CanvasText;
+          }
+        }
+
+        .current-header-link a {
+          color: var(--theme-text);
+        }
+      </style>
+    </main>
+    <Footer path={currentFile} />
+    <!-- <script>
+      window.onload = () => {
+        console.log(
+          document.styleSheets.length,
+          document.styleSheets.item(13)?.cssRules.length
+        );
+        if (document.styleSheets.item(13)?.cssRules.length === 156) {
+          const a = document.styleSheets.item(13);
+
+          if (a && a !== null) {
+            a.disabled = true;
+            a.cssRules.item(1);
+          }
+          console.log(document.styleSheets.item(13));
+        }
+      };
+    </script> -->
+  </body>
+</html>

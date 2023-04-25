@@ -1,5 +1,10 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
+  // mode: "jit",
+  // mode: "jit",
+  // purge: [],
+  darkMode: "class",
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
     screens: {
@@ -65,5 +70,9 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // require("postcss-import"),
+    // require("tailwindcss"),
+    // require("autoprefixer"),
+  ],
 };

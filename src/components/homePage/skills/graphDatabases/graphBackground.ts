@@ -82,7 +82,6 @@ window.requestIdleCallback(async () => {
     }
   });
   const animate = (currentTime: number) => {
-    const deltaTime = currentTime - lastTime;
     if (!isPaused) {
       Graph.cameraPosition({
         x: distance * Math.sin(angle),
