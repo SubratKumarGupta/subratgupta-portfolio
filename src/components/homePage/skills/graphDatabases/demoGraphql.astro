@@ -1,0 +1,44 @@
+---
+---
+
+<div
+  id="3d-graph-wrapper"
+  class="h-full mobile:-z-20 w-full relative text-4xl ml-5"
+>
+  <div class="absolute z-10 top-1/2 left-0 max-w-lg">
+    <span class="text-primary-teal font-semibold">\</span> I can work with
+    <a
+      class="text-slate-400 w-fit transition-all hover:text-primary-teal border-r-0 hover:border-b-2 hover:border-gray"
+      href="https://graphql.org/"
+      target="_blank">GraphQL</a
+    > and Graph Databases like
+    <a
+      class="text-slate-400 w-fit transition-all hover:text-primary-teal border-r-0 hover:border-b-2 hover:border-gray"
+      href="https://dgraph.io"
+      target="_blank">Dgraph</a
+    >
+  </div>
+  <div class="absolute bottom-0 left-0 z-10 mb-6">
+    <a href="/demo/graphql-voyager" target="_blank">
+      schema<span
+        class="text-primary-teal hover:text-[#00c3ff] transition-colors duration-100"
+        >.demo()</span
+      >
+    </a>
+  </div>
+  <div id="3d-graph" class="h-full w-full absolute"></div>
+</div>
+
+<style>
+  a {
+    pointer-events: auto;
+  }
+  .pointer-events-none {
+    pointer-events: none;
+  }
+  #3d-graph-wrapper a:hover + #3d-graph {
+    pointer-events: none;
+  }
+</style>
+
+<script src="./graphBackground"></script>
