@@ -1,4 +1,5 @@
 ---
+import DemoGraphql from "./graphDatabases/demoGraphql.astro";
 import DemoThreejs from "./threejs/demoThreejs.astro";
 ---
 
@@ -13,24 +14,7 @@ import DemoThreejs from "./threejs/demoThreejs.astro";
   <div class="h-[100vh]">
     <DemoThreejs />
   </div>
-  <div id="3d-graph-wrapper" class="h-[150vh] mobile:-z-20 w-full relative">
-    <div id="3d-graph" class="h-full w-full absolute"></div>
+  <div class="h-[100vh]">
+    <DemoGraphql />
   </div>
 </div>
-<style>
-  .pointer-events-none {
-    pointer-events: none;
-  }
-</style>
-
-<script>
-  // import ForceGraph3D from "3d-force-graph";
-
-  // const res = new Vector2(graphDiv.clientWidth, graphDiv.clientHeight);
-  // const bloomPass = new UnrealBloomPass(res, 1, 1, 0.1);
-  // bloomPass.radius = 1;
-  // bloomPass.threshold = 0.1;
-
-  // Graph.postProcessingComposer().addPass(bloomPass);
-</script>
-<script src="./graphDatabases/graphBackground"></script>
