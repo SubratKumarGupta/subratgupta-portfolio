@@ -4,31 +4,107 @@ import TopNav from "./topNav.astro";
 // import SidebarToggle from "./SidebarToggle";
 ---
 
-<header class="border-b border-teal-400">
-  <SkipToContent />
-  <nav class="nav-wrapper" title="Top Navigation">
-    <div class="menu-toggle">
-      <!-- <SidebarToggle client:idle /> -->
-    </div>
-    <div class="group logo flex items-center">
-      <a href="/" class="titlehead hover:no-underline">
-        <div
-          class="name font-medium text-4xl text-white group-hover:text-white"
-        >
-          Subrat<span class="text-primary-teal">.me()</span>
+<div class="sticky h-fit top-0 z-50 bg-primary-Dark">
+  <header class="border-b border-teal-400">
+    <SkipToContent />
+    <nav class="nav-wrapper" title="Top Navigation">
+      <div class="group logo flex items-center">
+        <a href="/" class="titlehead hover:no-underline">
+          <div
+            class="name font-medium text-4xl text-white group-hover:text-white"
+          >
+            Subrat<span class="text-primary-teal">.me()</span>
+          </div>
+        </a>
+      </div>
+      <div class="text-2xl">
+        <div class="mobile:hidden">
+          <TopNav />
         </div>
-      </a>
-    </div>
-    <div class="text-2xl mobile:hidden">
-      <TopNav />
-    </div>
-  </nav>
-</header>
+        <div class="desktop:hidden">
+          <div class="flex flex-col justify-center group" id="hamburger">
+            <div
+              class="h-1 w-8 bg-gray-500 rounded-full bg-gray group-hover:bg-slate-400"
+            >
+            </div>
+            <div
+              class="h-1 w-6 my-1 bg-gray-500 rounded-full bg-gray group-hover:bg-slate-400"
+            >
+            </div>
+            <div
+              class="h-1 w-10 bg-gray-500 rounded-full bg-gray group-hover:bg-slate-400"
+            >
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div
+    id="mobile-menu"
+    class="desktop:hidden hidden text-xl flex-col"
+    style="align-items: flex-start;"
+  >
+    <TopNav />
+  </div>
+</div>
+
+<style>
+  #mobile-menu.active {
+    display: flex;
+  }
+  @keyframes cross {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(-45deg);
+    }
+    100% {
+      transform: rotate(-45deg);
+    }
+  }
+  @keyframes dropdown {
+    0% {
+      height: 0;
+    }
+    100% {
+      height: auto;
+    }
+  }
+
+  #hamburger.active div:nth-child(1) {
+    transform: rotate(45deg) translate(-3px, -3px);
+    width: 2rem;
+    background-color: var(--theme-accent);
+    animation: cross 1s forwards;
+  }
+  #hamburger.active div:nth-child(2) {
+    opacity: 0;
+    width: 2rem;
+  }
+  #hamburger.active div:nth-child(3) {
+    transform: rotate(45deg) translate(-3px, -3px);
+    width: 2rem;
+    animation: cross 1s forwards;
+  }
+</style>
+<script>
+  const mobileMenu = document.getElementById("mobile-menu") as HTMLDivElement;
+  const hamburger = document.getElementById("hamburger") as HTMLDivElement;
+  hamburger.addEventListener("click", () => {
+    hamburger.classList.toggle("active");
+    mobileMenu.classList.toggle("hidden");
+    mobileMenu.classList.toggle("flex");
+    // mobileMenu.= "felx";
+  });
+</script>
 
 <style>
   /* .titlehead {
     all: initial;
   } */
+
   header {
     z-index: 11;
     height: var(--theme-navbar-height);
