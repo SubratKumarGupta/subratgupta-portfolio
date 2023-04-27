@@ -23,7 +23,7 @@ const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
 const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
 ---
 
-<html dir={data.dir} lang={data.lang} class="initial">
+<html dir={data.dir} lang={data.lang} class="initial scroll-smooth">
   <head>
     <HeadCommon />
     <!-- <HeadSEO {...data} canonicalUrl={canonicalURL} /> -->
@@ -57,7 +57,6 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
       #grid-main {
         padding: var(--doc-padding) var(--gutter);
         grid-column: 2;
-        padding-left: 2rem;
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -66,7 +65,7 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
       #grid-right {
         /* display: none; */
         display: flex;
-        padding-left: 2rem;
+        /* padding-left: 2rem; */
         position: sticky;
         grid-column: 1;
       }
@@ -80,7 +79,7 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
 
         #grid-left {
           display: flex;
-          padding-left: 2rem;
+          /* padding-left: 2rem; */
           position: sticky;
           grid-column: 1;
         }
@@ -134,7 +133,11 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
         </PageContent>
       </div>
       <aside id="grid-right" class="grid-sidebar" title="Table of Contents">
-        <RightSidebar headings={headings} githubEditUrl={githubEditUrl} />
+        <RightSidebar
+          title={data.title}
+          headings={headings}
+          githubEditUrl={githubEditUrl}
+        />
       </aside>
       <style is:inline>
         * {
@@ -258,6 +261,11 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
           align-items: center;
           gap: 0.5rem;
         }
+        a:hover,
+        a:focus {
+          text-decoration: underline;
+          text-decoration-color: #8f8f8f;
+        }
 
         article > section :is(ul, ol) > * + * {
           margin-top: 0.75rem;
@@ -313,11 +321,6 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
           background: var(--theme-accent);
           opacity: var(--theme-accent-opacity);
           border-radius: var(--border-radius);
-        }
-
-        a:hover,
-        a:focus {
-          text-decoration: underline;
         }
 
         a:focus {
@@ -483,7 +486,7 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
         .header-link:hover,
         .header-link:focus,
         .header-link:focus-within {
-          border-inline-start-color: var(--theme-accent-secondary);
+          border-inline-start-color: var(--theme-accent);
         }
 
         .header-link:hover a,
@@ -543,6 +546,7 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
           background-color: var(--theme-bg-accent);
           /* Indicates the current heading for forced colors users in older browsers */
           outline: 1px solid transparent;
+          border-inline-start-color: #3fd4d481;
         }
 
         @media (forced-colors: active) {
@@ -557,22 +561,5 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
       </style>
     </main>
     <Footer path={currentFile} />
-    <!-- <script>
-      window.onload = () => {
-        console.log(
-          document.styleSheets.length,
-          document.styleSheets.item(13)?.cssRules.length
-        );
-        if (document.styleSheets.item(13)?.cssRules.length === 156) {
-          const a = document.styleSheets.item(13);
-
-          if (a && a !== null) {
-            a.disabled = true;
-            a.cssRules.item(1);
-          }
-          console.log(document.styleSheets.item(13));
-        }
-      };
-    </script> -->
   </body>
 </html>

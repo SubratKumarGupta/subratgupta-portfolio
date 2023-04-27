@@ -50,7 +50,7 @@ export default defineConfig({
       ],
     ],
     shikiConfig: {
-      theme: "nord",
+      theme: "poimandres",
       wrap: true,
     },
   },

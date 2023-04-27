@@ -8,9 +8,10 @@ type ItemOffsets = {
   topOffset: number;
 };
 
-const TableOfContents: FunctionalComponent<{ headings: MarkdownHeading[] }> = ({
-  headings = [],
-}) => {
+const TableOfContents: FunctionalComponent<{
+  headings: MarkdownHeading[];
+  title: string;
+}> = ({ headings = [], title }) => {
   const toc = useRef<HTMLUListElement>();
   const onThisPageID = "on-this-page-heading";
   const itemOffsets = useRef<ItemOffsets[]>([]);
@@ -74,8 +75,8 @@ const TableOfContents: FunctionalComponent<{ headings: MarkdownHeading[] }> = ({
 
   return (
     <>
-      <h2 id={onThisPageID} className="heading">
-        On this page
+      <h2 id={onThisPageID} className="heading pb-2">
+        page content {/* {title} */}
       </h2>
       {/* @ts-ignore */}
       <ul ref={toc}>

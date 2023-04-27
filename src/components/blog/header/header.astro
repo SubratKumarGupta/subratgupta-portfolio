@@ -10,8 +10,10 @@ import SkipToContent from "./SkipToContent.astro";
       <!-- <SidebarToggle client:idle /> -->
     </div>
     <div class="logo flex">
-      <a href="/">
-        <h1>{"Subrat.me()"}</h1>
+      <a href="/" class="titlehead">
+        <div class="name font-medium text-4xl">
+          Subrat<span class="text-primary-teal">.me()</span>
+        </div>
       </a>
     </div>
     <div style="flex-grow: 1;"></div>
@@ -19,6 +21,9 @@ import SkipToContent from "./SkipToContent.astro";
 </header>
 
 <style>
+  /* .titlehead {
+    all: initial;
+  } */
   header {
     z-index: 11;
     height: var(--theme-navbar-height);
