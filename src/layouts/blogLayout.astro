@@ -8,7 +8,7 @@ import PageContent from "../components/blog/pageContent/PageContent.astro";
 // import LeftSidebar from '../components/LeftSidebar/LeftSidebar.astro';
 import RightSidebar from "../components/blog/RightSidebar/RightSidebar.astro";
 import Footer from "../components/blog/footer/footer.astro";
-import { GITHUB_EDIT_URL, SITE } from "../consts";
+import { SITE } from "../consts";
 import "../components/blog/styles/theme.css";
 // import "../components/blog/styles/index.css";
 
@@ -20,7 +20,6 @@ const { headings, ...data } = Astro.props;
 // const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const currentPage = Astro.url.pathname;
 const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
-const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
 ---
 
 <html dir={data.dir} lang={data.lang} class="initial scroll-smooth">
@@ -124,20 +123,16 @@ const githubEditUrl = `${GITHUB_EDIT_URL}/${currentFile}`;
 				<LeftSidebar currentPage={currentPage} />
 			</aside> -->
       <div id="grid-main">
-        <PageContent
-          title={data.title}
-          headings={headings}
-          githubEditUrl={githubEditUrl}
-        >
+        <PageContent title={data.title} headings={headings}>
           <slot />
         </PageContent>
       </div>
-      <aside id="grid-right" class="grid-sidebar" title="Table of Contents">
-        <RightSidebar
-          title={data.title}
-          headings={headings}
-          githubEditUrl={githubEditUrl}
-        />
+      <aside
+        id="grid-right"
+        class="grid-sidebar sticky top-20"
+        title="Table of Contents"
+      >
+        <RightSidebar title={data.title} headings={headings} />
       </aside>
       <style is:inline>
         * {

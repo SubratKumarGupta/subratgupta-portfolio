@@ -6,10 +6,9 @@ import MoreMenu from "../RightSidebar/MoreMenu.astro";
 type Props = {
   title: string;
   headings: MarkdownHeading[];
-  githubEditUrl: string;
 };
 
-const { title, githubEditUrl } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <article id="article" class="content">
@@ -20,8 +19,8 @@ const { title, githubEditUrl } = Astro.props;
     </nav> -->
     <slot />
   </section>
-  <nav class="block sm:hidden">
-    <MoreMenu editHref={githubEditUrl} />
+  <nav class="block desktop:hidden">
+    <MoreMenu />
   </nav>
 </article>
 
