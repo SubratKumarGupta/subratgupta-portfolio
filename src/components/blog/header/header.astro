@@ -1,22 +1,27 @@
 ---
 import SkipToContent from "./SkipToContent.astro";
+import TopNav from "./topNav.astro";
 // import SidebarToggle from "./SidebarToggle";
 ---
 
-<header>
+<header class="border-b border-teal-400">
   <SkipToContent />
   <nav class="nav-wrapper" title="Top Navigation">
     <div class="menu-toggle">
       <!-- <SidebarToggle client:idle /> -->
     </div>
-    <div class="logo flex">
-      <a href="/" class="titlehead">
-        <div class="name font-medium text-4xl">
+    <div class="group logo flex items-center">
+      <a href="/" class="titlehead hover:no-underline">
+        <div
+          class="name font-medium text-4xl text-white group-hover:text-white"
+        >
           Subrat<span class="text-primary-teal">.me()</span>
         </div>
       </a>
     </div>
-    <div style="flex-grow: 1;"></div>
+    <div class="text-2xl mobile:hidden">
+      <TopNav />
+    </div>
   </nav>
 </header>
 
