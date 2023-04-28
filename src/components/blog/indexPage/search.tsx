@@ -1,5 +1,6 @@
 import type { CollectionEntry } from "astro:content";
-import React, { useState } from "react";
+import { useState } from "react";
+
 import "./search.css";
 
 type SearchBarProps = {
@@ -49,28 +50,26 @@ export const BlogSearchPage = ({ blogPosts }: SearchBarProps) => {
         </div>
         <div className="resultwrapper w-full mt-20 pb-10 weki overflow-x-scroll flex flex-row">
           {filterBlogPosts.length ? (
-            filterBlogPosts.map((post) => {
+            filterBlogPosts.map((post, i) => {
               filterBlogPosts;
               return (
-                <>
-                  <a
-                    key={post.id}
-                    className="mx-5"
-                    href={`/blog/${post.slug}`}
-                    target="_blank"
-                  >
-                    <div className="card">
-                      <div className="card-content h-full relative ">
-                        <h3 className="card-title max-h-[80%]">
-                          {post.data.title}
-                        </h3>
-                        <h4 className="card-subtitle text-primary-teal absolute mb-[10%] bottom-0">
-                          {post.data.date.toDateString()}
-                        </h4>
-                      </div>
+                <a
+                  key={i}
+                  className="mx-5"
+                  href={`/blog/${post.slug}`}
+                  target="_blank"
+                >
+                  <div className="card">
+                    <div className="card-content h-full relative">
+                      <h3 className="card-title max-h-[80%]">
+                        {post.data.title}
+                      </h3>
+                      <h4 className="card-subtitle text-primary-teal absolute mb-[10%] bottom-0">
+                        {post.data.date.toDateString()}
+                      </h4>
                     </div>
-                  </a>
-                </>
+                  </div>
+                </a>
               );
             })
           ) : (

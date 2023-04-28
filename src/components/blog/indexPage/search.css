@@ -89,9 +89,10 @@ body {
   );
   background-position: 0% 0%;
   background-size: 5vmin 5vmin;
-  height: calc(100% - 10vmin);
+  /* height: calc(100% - 10vmin); */
   padding: 5vmin;
   position: relative;
+  height: 100%;
   transition: background-position 350ms ease;
   width: calc(100% - 10vmin);
   z-index: 2;
@@ -107,11 +108,16 @@ body {
 
 .card-title {
   font-size: 3.7vmin;
+  max-height: 80%;
 }
 
 .card-subtitle {
-  font-size: 3vmin;
+  font-size: 2.5vmin;
   margin-top: 2vmin;
+  color: #3fd4d4;
+  position: absolute;
+  margin-bottom: 10%;
+  bottom: 0;
 }
 
 .card-subtitle-word {
