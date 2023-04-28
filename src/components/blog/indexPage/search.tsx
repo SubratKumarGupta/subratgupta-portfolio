@@ -15,10 +15,6 @@ export const BlogSearchPage = ({ blogPosts }: SearchBarProps) => {
     setSearchVal(e.target.value);
   };
 
-  const handleClearBtn = () => {
-    setSearchVal("");
-  };
-
   return (
     <>
       <div className="blogsearch flex flex-col items-center w-full">

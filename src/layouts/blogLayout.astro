@@ -125,7 +125,7 @@ const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
 				<LeftSidebar currentPage={currentPage} />
 			</aside> -->
       <div id="grid-main">
-        <PageContent title={data.title} headings={headings}>
+        <PageContent title={data.title} time={time} headings={headings}>
           <slot />
         </PageContent>
       </div>
