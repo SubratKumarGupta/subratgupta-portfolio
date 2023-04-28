@@ -14,9 +14,10 @@ import "../components/blog/styles/theme.css";
 
 type Props = CollectionEntry<"blog">["data"] & {
   headings: MarkdownHeading[];
+  time: string;
 };
 
-const { headings, ...data } = Astro.props;
+const { headings, time, ...data } = Astro.props;
 // const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const currentPage = Astro.url.pathname;
 const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
@@ -129,7 +130,7 @@ const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
         </PageContent>
       </div>
       <aside id="grid-right" class="grid-sidebar" title="Table of Contents">
-        <RightSidebar title={data.title} headings={headings} />
+        <RightSidebar time={time} title={data.title} headings={headings} />
       </aside>
       <style is:inline>
         * {

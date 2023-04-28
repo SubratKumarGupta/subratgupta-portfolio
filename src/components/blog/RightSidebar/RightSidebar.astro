@@ -6,9 +6,10 @@ import MoreMenu from "./MoreMenu.astro";
 type Props = {
   headings: MarkdownHeading[];
   title: string;
+  time: string;
 };
 
-const { headings, title } = Astro.props;
+const { time, headings, title } = Astro.props;
 ---
 
 <nav class="sidebar-nav" aria-labelledby="grid-right">
@@ -18,7 +19,7 @@ const { headings, title } = Astro.props;
       client:media="(min-width: 50em)"
       headings={headings}
     />
-    <MoreMenu />
+    <MoreMenu time={time} />
   </div>
 </nav>
 

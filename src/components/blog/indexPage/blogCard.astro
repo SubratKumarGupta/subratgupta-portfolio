@@ -1,0 +1,13 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+type Props = {
+  blogPost: CollectionEntry<"blog">;
+};
+
+const { blogPost } = Astro.props;
+---
+
+<a href={`/blog/${blogPost.slug}`} target="_blank">
+  <h1>{blogPost.data.title}</h1>
+</a>

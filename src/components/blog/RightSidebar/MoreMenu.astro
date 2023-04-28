@@ -1,3 +1,10 @@
+---
+type Props = {
+  time: string;
+};
+const { time } = Astro.props;
+---
+
 <h2 class="heading">More</h2>
 <ul>
   {
@@ -59,7 +66,9 @@
   }
 </ul>
 <div style="margin: 2rem 0; text-align: center;"></div>
-
+<div>
+  This artical was resised on <span class="text-primary-teal">{time}</span>
+</div>
 <style>
   .github {
     text-decoration: none;

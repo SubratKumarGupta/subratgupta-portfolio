@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-
+import { BlogSearchPage } from "../../components/blog/indexPage/search";
 const blogPosts = await getCollection("blog", ({ data }) => {
   return !data.draft && data.date < new Date();
 });
@@ -17,7 +17,8 @@ const blogPosts = await getCollection("blog", ({ data }) => {
   </head>
   <body>
     <main class="flex text-white overflow-x-hidden w-screen h-[100vh]">
-      {
+      <BlogSearchPage client:load blogPosts={blogPosts} />
+      <!-- {
         blogPosts.map((post) => {
           return (
             <a href={`/blog/${post.slug}`} target="_blank">
@@ -25,7 +26,7 @@ const blogPosts = await getCollection("blog", ({ data }) => {
             </a>
           );
         })
-      }
+      } -->
     </main>
   </body>
 </html>

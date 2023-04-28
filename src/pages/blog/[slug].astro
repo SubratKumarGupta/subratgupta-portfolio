@@ -15,6 +15,10 @@ const { post }: Props = Astro.props;
 const { Content, headings } = await post.render();
 ---
 
-<BlogLayout headings={headings} {...post.data}>
+<BlogLayout
+  headings={headings}
+  {...post.data}
+  time={post.data.date.toDateString()}
+>
   <Content />
 </BlogLayout>
