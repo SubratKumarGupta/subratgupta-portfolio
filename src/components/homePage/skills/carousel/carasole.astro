@@ -1,0 +1,109 @@
+---
+import { CARASOLE } from "../../../../consts";
+const carosole = CARASOLE;
+---
+
+<div class="h-full w-full relative -z-10">
+  <div class="h-full w-full overflow-x-hidden a scroll-smooth">
+    <div
+      id="slider-images"
+      style={`width: ${carosole.length * 100}%;`}
+      class={`flex h-full -z-10 `}
+    >
+      {
+        carosole.map((img) => {
+          return (
+            <>
+              <div class="carosole-img h-full w-full relative" id={img.name}>
+                <div class="info text-4xl absolute ml-7 pointer-events-auto bottom-20 left-0">
+                  <a
+                    class="text-primary-teal font-semibold w-fit transition-all hover:text-primary-teal border-r-0 hover:border-b-2 hover:border-gray"
+                    href={img.demoLink}
+                    target="_blank"
+                  >
+                    {img.name}
+                  </a>
+                </div>
+                <img class="h-full w-full" src={img.imglink} alt="c1 img" />
+              </div>
+            </>
+          );
+        })
+      }
+    </div>
+    <div class="absolute top-1/4 ml-5 text-4xl font-semibold">
+      <span class="text-primary-teal">\</span> I can make <span
+        class="text-gray">Full-Stack</span
+      > app
+    </div>
+    <div
+      class="iddactor absolute bottom-0 flex justify-center w-full py-2 gap-2"
+    >
+      {
+        carosole.map((img, i) => {
+          return (
+            <>
+              <a
+                class={`indictaorlink border-2 transition-all duration-150 border-transparent rounded bg-gray ${
+                  i === 0 ? "bg-primary-teal" : ""
+                }`}
+              >
+                <div id={`link${img.name}`} class="w-10 h-1 indictor" />
+              </a>
+            </>
+          );
+        })
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  import gsap from "gsap";
+  const carosoleIndictaor = document.querySelectorAll(
+    ".indictaorlink"
+  ) as NodeListOf<HTMLDivElement>;
+  const images = document.getElementById("slider-images") as HTMLDivElement;
+  let tick = 0;
+
+  // carosoleIndictaor.forEach((indictaor, i) => {
+  //   indictaor.addEventListener("click", () => {
+  //     tick = i;
+  //     gsap.to(images, {
+  //       translateX: `${i * (-100 / carosoleIndictaor.length)}%`,
+  //       duration: 100 / carosoleIndictaor.length / 20,
+  //       ease: "power2.out",
+  //     });
+  //     carosoleIndictaor.forEach((otherIndactor) => {
+  //       otherIndactor.classList.remove("bg-primary-teal");
+  //     });
+  //     indictaor.classList.toggle("bg-primary-teal");
+  //     indictaor.classList.toggle("bg-grey");
+  //   });
+  // });
+
+  const slide = () => {
+    if (tick === carosoleIndictaor.length - 1) {
+      tick = 0;
+    } else {
+      tick++;
+    }
+
+    gsap.to(images, {
+      translateX: `${tick * (-100 / carosoleIndictaor.length)}%`,
+      duration: 100 / carosoleIndictaor.length / 20,
+      ease: "power2.out",
+      onComplete: () => {
+        setTimeout(() => {
+          slide();
+        }, 1000);
+      },
+    });
+    carosoleIndictaor.forEach((otherIndactor) => {
+      otherIndactor.classList.remove("bg-primary-teal");
+    });
+    carosoleIndictaor[tick]?.classList.toggle("bg-primary-teal");
+    carosoleIndictaor[tick]?.classList.toggle("bg-grey");
+  };
+  slide();
+</script>

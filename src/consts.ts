@@ -13,6 +13,34 @@ export const OPEN_GRAPH = {
   },
   twitter: "astrodotbuild",
 };
+type Carosole = {
+  name: string;
+  imglink: string;
+  demoLink: string;
+};
+
+export const CARASOLE: Carosole[] = [
+  {
+    name: "Doremon",
+    demoLink: "/fullStack_demo_img/doremon.jpg",
+    imglink: "/fullStack_demo_img/doremon.jpg",
+  },
+  {
+    name: "Mock",
+    demoLink: "/fullStack_demo_img/gsmarena_017.jpg",
+    imglink: "/fullStack_demo_img/gsmarena_017.jpg",
+  },
+  {
+    name: "Sean",
+    demoLink: "/fullStack_demo_img/sene.jpg",
+    imglink: "/fullStack_demo_img/sene.jpg",
+  },
+  {
+    name: "Seo",
+    demoLink: "/fullStack_demo_img/sene.jpg",
+    imglink: "/fullStack_demo_img/sene.jpg",
+  },
+];
 
 export const KNOWN_LANGUAGES = {
   English: "en",
