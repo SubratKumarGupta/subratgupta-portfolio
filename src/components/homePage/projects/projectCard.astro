@@ -1,0 +1,94 @@
+<div>
+  <div
+    class="project relative flex justify-center items-center bg-darkblue h-[20vw] min-h-[12rem] w-[30vw] mobile:w-[90vw] mobile:ml-5 ml-8 m rounded-lg p-2 m-4"
+  >
+    <div
+      class={`project-inner bg-[#111515] transition-all  absolute rounded-lg`}
+    >
+      <div class="h-full w-full text-lg">
+        <slot />
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .project {
+    background-size: 1px 50%;
+    background-image: linear-gradient(
+      transparent 0%,
+      rgb(63 212 212) 50%,
+      transparent 100%
+    );
+    background-position: 0% 70%;
+
+    background-repeat: no-repeat;
+  }
+  .project-inner {
+    /* opacity: 0.2; */
+    /* display: none; */
+    /* background-color: rgba(0, 0, 0, 1); */
+    height: calc(100% - 2px);
+    width: calc(100% - 2px);
+  }
+</style>
+<script>
+  import gsap from "gsap";
+  const projects = document.querySelectorAll(
+    ".project"
+  ) as NodeListOf<HTMLDivElement>;
+
+  const Keyframe = [
+    { backgroundPosition: "0% 70%" },
+    { backgroundPosition: "0% 0%" },
+    {
+      backgroundImage: `linear-gradient( 90deg,
+        transparent 0%,
+        rgb(63 212 212) 50%,
+        transparent 100%)`,
+      backgroundSize: "50% 1%",
+    },
+    { backgroundPosition: "100% 0%" },
+    {
+      backgroundImage: `linear-gradient( 180deg,
+        transparent 0%,
+        rgb(63 212 212) 50%,
+        transparent 100%)`,
+      backgroundPosition: "100% 0%",
+      backgroundSize: "1% 50%",
+    },
+    {
+      backgroundPosition: "100% 20%",
+      duration: 0,
+    },
+  ];
+  //   const speed = 100;
+  // Add animations to the timeline
+  projects.forEach((project) => {
+    const tl = gsap.timeline({ paused: true });
+
+    tl.to(project, {
+      keyframes: Keyframe,
+      duration: 1.5,
+      ease: "back.out(1.5)",
+    });
+
+    // Add a hover event listener
+    project.addEventListener("mouseenter", () => {
+      // Play the timeline on mouseenter
+      // tl.timeScale(1);
+      tl.timeScale(2);
+
+      tl.play();
+    });
+
+    // Add a mouseleave event listener to reset the timeline
+    project.addEventListener("mouseleave", () => {
+      // Reverse the timeline on mouseleave
+      tl.timeScale(2);
+      tl.reverse();
+    });
+  });
+
+  // Add a hover event listener
+</script>
