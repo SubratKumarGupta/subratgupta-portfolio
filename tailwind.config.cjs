@@ -13,7 +13,7 @@ module.exports = {
     },
     fontFamily: {
       // font-family: "Times New Roman", Times, serif;
-      // robotoMono: ["Roboto Mono", "monospace"],
+      robotoMono: ["Roboto Mono", "monospace"],
       // robotoSarif: ["Roboto Mono", "monospace", "serif"],
     },
     extend: {
