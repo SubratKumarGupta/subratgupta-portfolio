@@ -21,6 +21,10 @@ import mdx from "@astrojs/mdx";
 
 import preact from "@astrojs/preact";
 
+import analyze from "rollup-plugin-analyzer";
+
+import { visualizer } from "rollup-plugin-visualizer";
+
 // https://astro.build/config
 export default defineConfig({
   markdown: {
@@ -55,7 +59,7 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [viteCompression()],
+    plugins: [viteCompression(), visualizer()],
   },
   integrations: [tailwind(), react(), compress(), mdx(), preact()],
 });
