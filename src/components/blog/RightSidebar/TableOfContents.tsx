@@ -2,6 +2,7 @@ import type { MarkdownHeading } from "astro";
 import type { FunctionalComponent } from "preact";
 import { unescape } from "html-escaper";
 import { useState, useEffect, useRef } from "preact/hooks";
+import "./TabelOfcontent.css";
 
 type ItemOffsets = {
   id: string;
@@ -11,7 +12,7 @@ type ItemOffsets = {
 const TableOfContents: FunctionalComponent<{
   headings: MarkdownHeading[];
   title: string;
-}> = ({ headings = [], title }) => {
+}> = ({ headings = [] }) => {
   const toc = useRef<HTMLUListElement>();
   const onThisPageID = "on-this-page-heading";
   const itemOffsets = useRef<ItemOffsets[]>([]);

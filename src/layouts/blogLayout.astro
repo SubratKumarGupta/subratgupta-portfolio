@@ -23,7 +23,7 @@ const currentPage = Astro.url.pathname;
 const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
 ---
 
-<html dir={data.dir} lang={data.lang} class="initial scroll-smooth">
+<html dir={data.dir} lang={data.lang} class="initial scroll-smooth dark">
   <head>
     <HeadCommon />
     <!-- <HeadSEO {...data} canonicalUrl={canonicalURL} /> -->
@@ -37,6 +37,24 @@ const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
         grid-template-rows: var(--theme-navbar-height) 1fr;
         --gutter: 0.5rem;
         --doc-padding: 2rem;
+      }
+      /* Scrollbar Styling */
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 4px;
+      }
+      /* * {
+  } */
+      ::-webkit-scrollbar-track {
+        background-color: black;
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 10px;
+        border-radius: 10px;
+        background: #6d6d6d;
       }
 
       .layout {

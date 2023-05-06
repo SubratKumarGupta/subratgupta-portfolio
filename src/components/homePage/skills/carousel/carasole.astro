@@ -3,7 +3,12 @@ import { CARASOLE } from "../../../../consts";
 const carosole = CARASOLE;
 ---
 
-<div class="h-full w-full relative -z-10">
+<div class="h-full w-full relative -z-10 mt-10">
+  <div class="ml-5 mt-10 mb-7 text-2xl font-semibold desktop:hidden">
+    <span class="text-primary-teal">\</span> I can make <span class="text-gray"
+      >Full-Stack</span
+    > apps
+  </div>
   <div class="h-full w-full overflow-x-hidden a scroll-smooth">
     <div
       id="slider-images"
@@ -14,41 +19,54 @@ const carosole = CARASOLE;
         carosole.map((img) => {
           return (
             <>
-              <div class="carosole-img h-full w-full relative" id={img.name}>
-                <div class="info text-4xl absolute ml-7 pointer-events-auto bottom-20 left-0">
+              <div class="carosole-img  h-full w-full relative" id={img.name}>
+                <div class="h-full w-full opacity-50 mobile:opacity-70 ">
+                  <div class="h-full w-full crop">
+                    <img
+                      class="w-full object-fill"
+                      src={img.imglink}
+                      alt="c1 img"
+                    />
+                  </div>
+                </div>
+                <div class="info text-3xl absolute ml-7 z-50 pointer-events-auto bottom-20 left-0">
                   <a
-                    class="text-primary-teal font-semibold w-fit transition-all hover:text-primary-teal border-r-0 hover:border-b-2 hover:border-gray"
+                    class="text-primary-teal pointer-events-auto font-semibold w-fit transition-all hover:text-primary-teal border-r-0 hover:border-b-2 hover:border-gray"
                     href={img.demoLink}
                     target="_blank"
                   >
                     {img.name}
                   </a>
                 </div>
-                <img class="h-full w-full" src={img.imglink} alt="c1 img" />
               </div>
             </>
           );
         })
       }
     </div>
-    <div class="absolute top-1/4 ml-5 text-4xl font-semibold">
+    <div class="absolute mobile:hidden top-1/4 ml-5 text-4xl font-semibold">
       <span class="text-primary-teal">\</span> I can make <span
-        class="text-gray">Full-Stack</span
-      > app
+        class="text-primary-teal">Full-Stack</span
+      > apps
     </div>
+    <style></style>
+
     <div
-      class="iddactor absolute bottom-0 flex justify-center w-full py-2 gap-2"
+      class="iddactor absolute bottom-3 mobile:-bottom-10 flex justify-center w-full py-2 gap-2"
     >
       {
         carosole.map((img, i) => {
           return (
             <>
               <a
-                class={`indictaorlink border-2 transition-all duration-150 border-transparent rounded bg-gray ${
+                class={`indictaorlink border-2 transition-all duration-150 z-10 border-transparent rounded-lg  ${
                   i === 0 ? "bg-primary-teal" : ""
                 }`}
               >
-                <div id={`link${img.name}`} class="w-10 h-1 indictor" />
+                <div
+                  id={`link${img.name}`}
+                  class="w-10 h-2 indictor rounded-lg bg-gray"
+                />
               </a>
             </>
           );
@@ -57,6 +75,7 @@ const carosole = CARASOLE;
     </div>
   </div>
 </div>
+<style></style>
 
 <script>
   import gsap from "gsap";
@@ -83,27 +102,28 @@ const carosole = CARASOLE;
   // });
 
   const slide = () => {
-    if (tick === carosoleIndictaor.length - 1) {
-      tick = 0;
-    } else {
-      tick++;
-    }
+    setTimeout(() => {
+      if (tick === carosoleIndictaor.length - 1) {
+        tick = 0;
+      } else {
+        tick++;
+      }
 
-    gsap.to(images, {
-      translateX: `${tick * (-100 / carosoleIndictaor.length)}%`,
-      duration: 100 / carosoleIndictaor.length / 20,
-      ease: "power2.out",
-      onComplete: () => {
-        setTimeout(() => {
+      gsap.to(images, {
+        translateX: `${tick * (-100 / carosoleIndictaor.length)}%`,
+        duration: 100 / carosoleIndictaor.length / 20,
+        ease: "power2.out",
+        onComplete: () => {
           slide();
-        }, 1000);
-      },
-    });
-    carosoleIndictaor.forEach((otherIndactor) => {
-      otherIndactor.classList.remove("bg-primary-teal");
-    });
-    carosoleIndictaor[tick]?.classList.toggle("bg-primary-teal");
-    carosoleIndictaor[tick]?.classList.toggle("bg-grey");
+        },
+      });
+      carosoleIndictaor.forEach((otherIndactor) => {
+        // otherIndactor.classList.remove("bg-grey");
+        otherIndactor.classList.remove("bg-primary-teal");
+      });
+      carosoleIndictaor[tick]?.classList.toggle("bg-primary-teal");
+      carosoleIndictaor[tick]?.classList.toggle("bg-grey");
+    }, 3000);
   };
   slide();
 </script>

@@ -21,24 +21,19 @@ type Carosole = {
 
 export const CARASOLE: Carosole[] = [
   {
-    name: "Doremon",
-    demoLink: "/fullStack_demo_img/doremon.jpg",
-    imglink: "/fullStack_demo_img/doremon.jpg",
+    name: "Social media app",
+    demoLink: "https://github.com/SubratKumarGupta/3by3",
+    imglink: "/fullStack_demo_img/3by3demo.webp",
   },
   {
-    name: "Mock",
-    demoLink: "/fullStack_demo_img/gsmarena_017.jpg",
-    imglink: "/fullStack_demo_img/gsmarena_017.jpg",
+    name: "Online 3D editor",
+    demoLink: "https://virtuealize.com/",
+    imglink: "/fullStack_demo_img/virtilizedemo.webp",
   },
   {
-    name: "Sean",
-    demoLink: "/fullStack_demo_img/sene.jpg",
-    imglink: "/fullStack_demo_img/sene.jpg",
-  },
-  {
-    name: "Seo",
-    demoLink: "/fullStack_demo_img/sene.jpg",
-    imglink: "/fullStack_demo_img/sene.jpg",
+    name: "Static blog",
+    demoLink: "https://subrat.me/blog/",
+    imglink: "/fullStack_demo_img/blogdemo.webp",
   },
 ];
 
@@ -46,10 +41,6 @@ export const KNOWN_LANGUAGES = {
   English: "en",
 } as const;
 export const KNOWN_LANGUAGE_CODES = Object.values(KNOWN_LANGUAGES);
-
-export const GITHUB_EDIT_URL = `https://github.com/withastro/astro/tree/main/examples/docs`;
-
-export const COMMUNITY_INVITE_URL = `https://astro.build/chat`;
 
 export type Sidebar = Record<
   (typeof KNOWN_LANGUAGE_CODES)[number],
