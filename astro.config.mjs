@@ -1,13 +1,11 @@
 // https://astro.build/config
 import { defineConfig } from "astro/config";
 import viteCompression from "vite-plugin-compression";
-
 import rehypeExternalLinks from "rehype-external-links";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkCodeTitles from "remark-code-titles";
 
-// https://astro.build/config
 import tailwind from "@astrojs/tailwind";
 
 // https://astro.build/config
@@ -18,12 +16,12 @@ import compress from "astro-compress";
 
 // https://astro.build/config
 import mdx from "@astrojs/mdx";
-
 import preact from "@astrojs/preact";
-
 import analyze from "rollup-plugin-analyzer";
-
 import { visualizer } from "rollup-plugin-visualizer";
+
+// https://astro.build/config
+import partytown from "@astrojs/partytown";
 
 // https://astro.build/config
 export default defineConfig({
@@ -61,5 +59,17 @@ export default defineConfig({
   vite: {
     plugins: [viteCompression(), visualizer()],
   },
-  integrations: [tailwind(), react(), compress(), mdx(), preact()],
+  integrations: [
+    tailwind(),
+    react(),
+    compress(),
+    mdx(),
+    preact(),
+    partytown({
+      // Adds dataLayer.push as a forwarding-event.
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),
+  ],
 });
