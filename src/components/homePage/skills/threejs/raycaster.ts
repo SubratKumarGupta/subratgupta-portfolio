@@ -1,4 +1,4 @@
-window.requestIdleCallback(async () => {
+window.onload = async () => {
   const { Power4, gsap } = await import("gsap");
   const {
     CircleGeometry,
@@ -282,4 +282,4 @@ window.requestIdleCallback(async () => {
   }
   animate();
   init();
-});
+};

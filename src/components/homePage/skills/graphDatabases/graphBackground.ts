@@ -1,4 +1,4 @@
-window.requestIdleCallback(async () => {
+window.onload = async () => {
   const ForceGraph3D = (await import("3d-force-graph")).default;
   const { Mesh, MeshLambertMaterial, SphereGeometry } = await import("three");
   const NODES = 400;
@@ -126,4 +126,4 @@ window.requestIdleCallback(async () => {
     lastTime = currentTime;
     animate(currentTime);
   });
-});
+};

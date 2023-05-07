@@ -1,4 +1,4 @@
-window.requestIdleCallback(async () => {
+window.onload = async () => {
   const { gsap } = await import("gsap");
   const {
     Mesh,
@@ -158,7 +158,7 @@ window.requestIdleCallback(async () => {
     //   duration: 0.5,
     // })
   });
-});
+};
 
 // import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
