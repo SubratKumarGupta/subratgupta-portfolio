@@ -58,13 +58,13 @@ export default defineConfig({
     },
   },
   vite: {
-    // plugins: [viteCompression(), visualizer()],
+    plugins: [viteCompression(), visualizer()],
   },
   site: "https://subrat.me/",
   integrations: [
     tailwind(),
     react(),
-    // compress(),
+    compress(),
     mdx(),
     preact(),
     sitemap(),
