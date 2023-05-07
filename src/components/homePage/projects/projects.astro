@@ -1,5 +1,6 @@
 ---
 import ProjectCard from "./projectCard.astro";
+const projects = ["virtu", "3by3", "dgraph", "blog"];
 ---
 
 <div class="text-5xl mobile:text-4xl w-full flex flex-col justify-center">
@@ -16,10 +17,56 @@ import ProjectCard from "./projectCard.astro";
   </style>
   <div class="content mt-[20vh]">
     <div class="flex w-full flex-wrap">
-      <ProjectCard>HI</ProjectCard>
-      <ProjectCard>HI</ProjectCard>
-      <ProjectCard>HI</ProjectCard>
-      <ProjectCard>HI</ProjectCard>
+      {
+        projects.map((project) => {
+          // console.log(`project-model-${project}`);
+          return (
+            <>
+              <div>
+                <dialog
+                  id={`project-model-${project}`}
+                  class="p-0 h-[90vh] w-[90vw] bg-primary-Dark border-primary-teal border-2 rounded-xl outline-none text-primary-teal  "
+                >
+                  <div class="  w-full h-full relative">
+                    <div
+                      class="closebtn text-gray absolute top-0 right-0 cursor-pointer hover:text-white pr-3 pt-2 transition-colors  "
+                      onclick={`document.getElementById('project-model-${project}').close()`}
+                    >
+                      X
+                    </div>
+                  </div>
+                </dialog>
+
+                <ProjectCard>
+                  <div
+                    onclick={`document.getElementById('project-model-${project}').showModal()`}
+                  >
+                    HI
+                  </div>
+                </ProjectCard>
+              </div>
+            </>
+          );
+        })
+      }
     </div>
   </div>
 </div>
+<style>
+  dialog {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  dialog[open] {
+    opacity: 1;
+    pointer-events: inherit;
+  }
+  dialog::backdrop {
+    background-color: rgba(14, 18, 18, 0.629);
+  }
+</style>
