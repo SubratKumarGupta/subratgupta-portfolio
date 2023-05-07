@@ -26,7 +26,9 @@ const currentFile = `src/content/docs${currentPage.replace(/\/$/, "")}.md`;
 <html dir={data.dir} lang={data.lang} class="initial scroll-smooth dark">
   <head>
     <HeadCommon />
+
     <!-- <HeadSEO {...data} canonicalUrl={canonicalURL} /> -->
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <title>
       {`${data.title} 🚀 ${SITE.title}`}
     </title>

@@ -5,10 +5,8 @@ import rehypeExternalLinks from "rehype-external-links";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkCodeTitles from "remark-code-titles";
-
 import tailwind from "@astrojs/tailwind";
 
-// https://astro.build/config
 import react from "@astrojs/react";
 
 // https://astro.build/config
@@ -22,6 +20,9 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 // https://astro.build/config
 import partytown from "@astrojs/partytown";
+import sitemap from "@astrojs/sitemap";
+
+// https://astro.build/config
 
 // https://astro.build/config
 export default defineConfig({
@@ -57,14 +58,16 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [viteCompression(), visualizer()],
+    // plugins: [viteCompression(), visualizer()],
   },
+  site: "https://subrat.me/",
   integrations: [
     tailwind(),
     react(),
-    compress(),
+    // compress(),
     mdx(),
     preact(),
+    sitemap(),
     partytown({
       // Adds dataLayer.push as a forwarding-event.
       config: {
