@@ -8,7 +8,16 @@ const blog = defineCollection({
     date: z.date(),
     draft: z.boolean(),
     tags: z.array(z.string()),
-    //   image: z.string().optional(),
+  }),
+});
+const projects = defineCollection({
+  schema: z.object({
+    name: z.string(),
+    logo: z.string(),
+    description: z.string(),
+    github: z.string().url().optional(),
+    website: z.string().url().optional(),
+    duration: z.number().optional(),
   }),
 });
 
@@ -16,4 +25,5 @@ const blog = defineCollection({
 //    This key should match your collection directory name in "src/content"
 export const collections = {
   blog: blog,
+  projects: projects,
 };
