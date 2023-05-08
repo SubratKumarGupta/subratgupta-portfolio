@@ -69,7 +69,8 @@ const projectsCollection = await getCollection("projects", ({ data }) => {
   <div class="content mt-[20vh]">
     <div class="flex w-full flex-wrap">
       {
-        projectsCollection.map(({ data }) => {
+        projectsCollection.map((project) => {
+          const data = project.data;
           // console.log(`project-model-${project}`);
           return (
             <>
@@ -92,6 +93,7 @@ const projectsCollection = await getCollection("projects", ({ data }) => {
                       website={data.website}
                       description={data.description}
                       duration={data.duration}
+                      collection={project}
                     />
                   </div>
                 </dialog>

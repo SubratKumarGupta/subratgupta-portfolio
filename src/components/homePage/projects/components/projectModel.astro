@@ -1,5 +1,7 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import ModelCommon from "./modelCommon.astro";
+import ContentLayout from "./ProjectContentLayout.astro";
 
 type Props = {
   logo: string;
@@ -8,9 +10,19 @@ type Props = {
   website: string | undefined;
   description: string;
   duration: number | undefined;
+  collection: CollectionEntry<"projects">;
 };
-const { logo, name, github, website, description, duration }: Props =
-  Astro.props;
+
+const {
+  logo,
+  name,
+  github,
+  website,
+  description,
+  duration,
+  collection,
+}: Props = Astro.props;
+const { Content } = await collection.render();
 ---
 
 <div class="h-full w-full flex">
@@ -34,13 +46,19 @@ const { logo, name, github, website, description, duration }: Props =
         )
       }
     </div>
-    <div class="text-white text-base w-full px-4 mt-3 text-left">
+    <div class="text-gray text-base w-full px-4 mt-3 text-left">
       {description}
     </div>
   </div>
-  <div class="content w-[75%] mobile:w-full h-full bg-[#111515]">
+  <div
+    class="content w-[75%] mobile:w-full h-full overflow-scroll bg-[#111515]"
+  >
     <div class="desktop:hidden mt-4">
       <ModelCommon logo={logo} name={name} github={github} website={website} />
     </div>
+    <div class="desktop:hidden text-gray text-base w-full px-4 mt-3 text-left">
+      {description}
+    </div>
+    <ContentLayout><Content /></ContentLayout>
   </div>
 </div>
