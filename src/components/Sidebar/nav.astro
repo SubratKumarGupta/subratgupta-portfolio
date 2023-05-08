@@ -5,7 +5,6 @@ const pages = ["home", "about", "blog", "contact"];
 <div class="text-2xl mobile:text-[10vw] mobile:w-full">
   {
     pages.map((pageName) => (
-      // {if(pageName)}
       <a
         href={
           pageName === "home"
@@ -34,8 +33,7 @@ const pages = ["home", "about", "blog", "contact"];
             </span>
             <span class="navLink">{pageName}</span>
             <span
-              class={`hov-suffix w-0 opacity-0   text-primary-teal desktop:group-hover:animate-showClick 
-                 mobile:group-hover:opacity-100 mobile:group-hover:w-full `}
+              class={`hov-suffix w-0 opacity-0   text-primary-teal desktop:group-hover:animate-showClick  mobile:group-hover:opacity-100 mobile:group-hover:w-full `}
             >
               {")"}
             </span>

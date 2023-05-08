@@ -20,9 +20,9 @@ const {
   website,
   description,
   duration,
-  collection,
-}: Props = Astro.props;
-const { Content } = await collection.render();
+}: // collection,
+Props = Astro.props;
+// const { Content } = await collection.render();
 ---
 
 <div class="h-full w-full flex">
@@ -59,6 +59,13 @@ const { Content } = await collection.render();
     <div class="desktop:hidden text-gray text-base w-full px-4 mt-3 text-left">
       {description}
     </div>
-    <ContentLayout><Content /></ContentLayout>
+
+    <ContentLayout>
+      <div
+        class="h-full w-full flex justify-center text-primary-teal items-center text-3xl"
+      >
+        <div class="max-w-[90%] mt-16">This content is yet to be written</div>
+      </div>
+    </ContentLayout>
   </div>
 </div>
