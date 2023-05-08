@@ -1,0 +1,58 @@
+---
+type Props = {
+  logo: string;
+  name: string;
+  github: string | undefined;
+  website: string | undefined;
+};
+const { logo, name, github, website }: Props = Astro.props;
+---
+
+<div class="h-[20%] justify-center items-center mt-3 flex">
+  <img
+    class="w-1/2 mobile:w-28 object-contain desktop:px-5"
+    src={logo}
+    alt={name}
+  />
+</div>
+<div class="text-xl mobile:text-3xl mobile:my-3 whitespace-nowrap text-center">
+  {name}
+</div>
+<div class="visit text-sm mobile:text-base pb-4 desktop:border-b-2 border-gray">
+  <!-- github -->
+
+  <div
+    class={`patron px-4 mt-3 mx-auto w-full  ${
+      github === undefined ? "hidden" : ""
+    }`}
+  >
+    <a href={github}>
+      <button
+        class="btn w-full border-2 border-primary-teal transition-all duration-150 hover:bg-costom-teal-800 text-white px-3 py-1"
+        >GitHub</button
+      >
+    </a>
+  </div>
+  <!-- website -->
+  <div
+    class={`patron px-4 mt-3 mx-auto w-full ${
+      website === undefined ? "hidden" : ""
+    }`}
+  >
+    <a href={website}>
+      <button
+        class="btn w-full border-2 border-primary-teal transition-all duration-150 hover:bg-costom-teal-800 text-white px-3 py-1"
+        >Visit Website</button
+      >
+    </a>
+  </div>
+</div>
+
+<style>
+  button {
+    outline: none;
+  }
+  a {
+    outline: none;
+  }
+</style>

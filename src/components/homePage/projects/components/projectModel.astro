@@ -1,0 +1,34 @@
+---
+import ModelCommon from "./modelCommon.astro";
+
+type Props = {
+  logo: string;
+  name: string;
+  github: string | undefined;
+  website: string | undefined;
+  description: string;
+  duration: number;
+};
+const { logo, name, github, website, description, duration }: Props =
+  Astro.props;
+---
+
+<div class="h-full w-full flex">
+  <div
+    class="sidebar w-[25%] mobile:hidden h-full overflow-hidden bg-primary-Dark"
+  >
+    <ModelCommon logo={logo} name={name} github={github} website={website} />
+    <div class="text-xl ml-4 mt-4 whitespace-nowrap">
+      <span class="text-[#94a3b8]">It too:</span>
+      {`${duration}`}<span class="text-gray">{" Months"}</span>
+    </div>
+    <div class="text-white text-base w-full px-4 mt-3 text-left">
+      {description}
+    </div>
+  </div>
+  <div class="content w-[75%] mobile:w-full h-full bg-[#111515]">
+    <div class="desktop:hidden mt-4">
+      <ModelCommon logo={logo} name={name} github={github} website={website} />
+    </div>
+  </div>
+</div>

@@ -1,35 +1,57 @@
 ---
-import ProjectCard from "./projectCard.astro";
-type Project = {
-  name: string;
-  logo: string;
-  description: string;
-};
-const projects: Project[] = [
-  {
-    name: "virtuealize",
-    logo: "https://avatars.githubusercontent.com/u/89607973?v=4",
-    description: `I established virtuealize.com codebase at ICiTified
-                          and developed a custom level editor using Three.js,
-                          GraphQL, MongoDB, Express, and Apollo. With custom
-                          auth.`,
-  },
-  {
-    name: "3by3",
-    logo: "/3by3-logo.png",
-    description: `I built a social media platform dedicated to sharing anime 3x3 grids, utilizing a highly scalable data layer powered by a self-managed and self-hosted Dgraph database and the T3 stack.`,
-  },
-  {
-    name: "blog",
-    logo: "/blog-logo.png",
-    description: `I created a personal blog using Astro as a static site generator (SSG) that achieved a perfect Lighthouse score of 100`,
-  },
-  {
-    name: "Dgraph Init",
-    logo: "https://camo.githubusercontent.com/ad506a027ecbfb7d70bffc3d3fcb9b3ef8d52c3bc164efd316e6de121ca8eef8/68747470733a2f2f692e6962622e636f2f70504b327133422f64677261702d696e69742d72656d6f766562672d707265766965772e706e67",
-    description: `Develop a CLI tool that simplifies the process of self-hosting and managing a Dgraph instance, using simplified and intuitive commands.`,
-  },
-];
+import ProjectCard from "./components/projectCard.astro";
+import ProjectModel from "./components/projectModel.astro";
+import { getCollection } from "astro:content";
+const projectsCollection = await getCollection("projects", ({ data }) => {
+  return data;
+});
+
+// type Project = {
+//   name: string;
+//   logo: string;
+//   description: string;
+//   github: string | undefined;
+//   website: string | undefined;
+//   duration: number;
+// };
+
+// const projects: Project[] = [
+//   {
+//     website: "https://virtuealize.com/",
+//     github: undefined,
+//     name: "Virtuealize",
+//     logo: "https://avatars.githubusercontent.com/u/89607973?v=4",
+//     duration: 12,
+//     description: `I established virtuealize.com codebase at ICiTified
+//                           and developed a custom level editor using Three.js,
+//                           GraphQL, MongoDB, Express, and Apollo. With custom
+//                           auth.`,
+//   },
+//   {
+//     website: "https://github.com/SubratKumarGupta/3by3",
+//     github: "https://github.com/SubratKumarGupta/3by3",
+//     name: "3by3",
+//     logo: "/3by3-logo.png",
+//     duration: 12,
+//     description: `I built a social media platform dedicated to sharing anime 3x3 grids, utilizing a highly scalable data layer powered by a self-managed and self-hosted Dgraph database and the T3 stack.`,
+//   },
+//   {
+//     website: "https://github.com/SubratKumarGupta/3by3",
+//     github: "https://github.com/SubratKumarGupta/subratgupta-portfolio",
+//     name: "My Blog",
+//     logo: "/blog-logo.png",
+//     duration: 12,
+//     description: `I created a personal blog using Astro as a static site generator (SSG) that achieved a perfect Lighthouse score of 100`,
+//   },
+//   {
+//     website: undefined,
+//     github: "https://github.com/SubratKumarGupta/dgraph-init",
+//     name: "Dgraph Init",
+//     logo: "https://camo.githubusercontent.com/ad506a027ecbfb7d70bffc3d3fcb9b3ef8d52c3bc164efd316e6de121ca8eef8/68747470733a2f2f692e6962622e636f2f70504b327133422f64677261702d696e69742d72656d6f766562672d707265766965772e706e67",
+//     duration: 12,
+//     description: `Develop a CLI tool that simplifies the process of self-hosting and managing a Dgraph instance, using simplified and intuitive commands.`,
+//   },
+// ];
 ---
 
 <div class="text-5xl mobile:text-4xl w-full flex flex-col justify-center">
@@ -47,41 +69,49 @@ const projects: Project[] = [
   <div class="content mt-[20vh]">
     <div class="flex w-full flex-wrap">
       {
-        projects.map((project) => {
+        projectsCollection.map(({ data }) => {
           // console.log(`project-model-${project}`);
           return (
             <>
               <div>
                 <dialog
-                  id={`project-model-${project.name}`}
+                  id={`project-model-${data.name}`}
                   class="p-0 h-[90vh] w-[90vw] bg-primary-Dark border-primary-teal border-2 rounded-xl outline-none text-primary-teal  "
                 >
-                  <div class="  w-full h-full relative">
+                  <div class="  w-full h-full relative flex">
                     <div
                       class="closebtn text-gray absolute top-0 right-0 cursor-pointer hover:text-white pr-3 pt-2 transition-colors  "
-                      onclick={`document.getElementById('project-model-${project.name}').close()`}
+                      onclick={`document.getElementById('project-model-${data.name}').close()`}
                     >
                       X
                     </div>
+                    <ProjectModel
+                      logo={data.logo}
+                      name={data.name}
+                      github={data.github}
+                      website={data.website}
+                      description={data.description}
+                      duration={data.duration}
+                    />
                   </div>
                 </dialog>
 
                 <ProjectCard>
                   <div
                     class="cursor-pointer h-full w-full flex justify-start items-center"
-                    onclick={`document.getElementById('project-model-${project.name}').showModal()`}
+                    onclick={`document.getElementById('project-model-${data.name}').showModal()`}
                   >
                     <div class="max-h-full max-w-full flex justify-center desktop:flex-col ">
                       <div class="ti w-[30%] desktop:mx-auto h-full mobile:p-2 m-1  flex justify-center  items-center">
                         <img
                           class="mobile:w-full  object-fit rounded-full"
-                          src={project.logo}
+                          src={data.logo}
                           alt=""
                         />
                       </div>
                       <div class="w-[65%] desktop:w-full my-auto desktop:text-center">
                         <div class=" text-primary-teal desktop:mx-auto desktop:mt-3 text-center w-[90%] desktop:w-[85%] mobile:text-base block-with-text  ">
-                          {project.description}
+                          {data.description}
                         </div>
                       </div>
                     </div>
@@ -106,6 +136,7 @@ const projects: Project[] = [
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s;
+
     /* display: ;
     flex-direction: column;
     align-items: center;
