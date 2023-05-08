@@ -7,7 +7,7 @@ type Props = {
   github: string | undefined;
   website: string | undefined;
   description: string;
-  duration: number;
+  duration: number | undefined;
 };
 const { logo, name, github, website, description, duration }: Props =
   Astro.props;
@@ -19,8 +19,20 @@ const { logo, name, github, website, description, duration }: Props =
   >
     <ModelCommon logo={logo} name={name} github={github} website={website} />
     <div class="text-xl ml-4 mt-4 whitespace-nowrap">
-      <span class="text-[#94a3b8]">It too:</span>
-      {`${duration}`}<span class="text-gray">{" Months"}</span>
+      {
+        duration === undefined ? (
+          <>
+            <span class="text-[#94a3b8]">It is:</span>
+            {"Ongoing"}
+          </>
+        ) : (
+          <>
+            <span class="text-[#94a3b8]">It too:</span>
+            {`${duration}`}
+            <span class="text-gray">{" Months"}</span>
+          </>
+        )
+      }
     </div>
     <div class="text-white text-base w-full px-4 mt-3 text-left">
       {description}

@@ -17,7 +17,7 @@ const projects = defineCollection({
     description: z.string(),
     github: z.string().url().optional(),
     website: z.string().url().optional(),
-    duration: z.number(),
+    duration: z.number().optional(),
   }),
 });
 
