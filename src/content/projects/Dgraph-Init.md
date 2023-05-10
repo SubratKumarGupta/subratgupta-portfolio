@@ -1,7 +1,7 @@
 ---
 github: "https://github.com/SubratKumarGupta/dgraph-init"
 name: "Dgraph Init"
-logo: "/dgraph-init-logo"
+logo: "/dgraph-init-logo.png"
 description: "Develop a CLI tool that simplifies the process of self-hosting and managing a Dgraph instance, using simplified and intuitive commands."
 ---
 
