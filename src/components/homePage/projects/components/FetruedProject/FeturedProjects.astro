@@ -1,0 +1,42 @@
+---
+import FeturedProjectCard from "./FeturedProjectsCards.astro";
+---
+
+<div class="w-full justify-center items-center flex-col flex">
+  <div
+    id="projects"
+    class="ml-4 projects-title text-5xl mobile:text-4xl text-primary-teal desktop:whitespace-nowrap mobile:text-[7vw]"
+  >
+    {"${"}<span class="text-white">What i have built</span>{"}"}
+  </div>
+  <FeturedProjectCard
+    side={"Left"}
+    projectLink={"https://anime-ctruh.netlify.app/"}
+    title={"Anime Experience"}
+    dicription={"Anime-Themed Experience with Dynamic Elements Designed to Evoke Relaxation and Calm. "}
+    gif={"ProjectBannerVids/animeExprince.webp"}
+  />
+  <FeturedProjectCard
+    side={"Right"}
+    projectLink={"https://www.ctruh.com/editor"}
+    title={"3D Editor"}
+    dicription={"Powerful Web-Based 3D Editor for Seamlessly Editing 2GB+ Models with Advanced PBR Material Tools and Hotspotting. "}
+    gif={"ProjectBannerVids/editor.webp"}
+  />
+  <FeturedProjectCard
+    side={"Left"}
+    projectLink={"https://www.ctruh.com/application/storefront-application"}
+    title={"Virtual Boutiques"}
+    dicription={"Create a 3D Virtual Boutique in Under 30 Minutes with Seamless Shopify Integration for Instant Product Sales."}
+    gif={"ProjectBannerVids/appliction.webp"}
+  />
+</div>
+
+<style>
+  button {
+    outline: none;
+  }
+  a {
+    outline: none;
+  }
+</style>

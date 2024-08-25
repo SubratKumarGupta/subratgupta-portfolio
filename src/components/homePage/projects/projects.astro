@@ -54,20 +54,16 @@ const projectsCollection = await getCollection("projects", ({ data }) => {
 // ];
 ---
 
-<div class="text-5xl mobile:text-4xl w-full flex flex-col justify-center">
-  <div
-    id="projects"
-    class="ml-4 projects-title text-primary-teal desktop:whitespace-nowrap mobile:text-[7vw]"
-  >
-    {"${"}<span class="text-white">What have i done</span>{"}"}
-  </div>
+<div
+  class="text-5xl mobile:text-4xl w-full flex flex-col justify-center items-center"
+>
   <style>
     .project-title {
       font-size: clamp(16px, 4vw, 22px);
     }
   </style>
-  <div class="content mt-[20vh]">
-    <div class="flex w-full flex-wrap">
+  <div class="content mt-[10vh]">
+    <div class="flex w-full flex-wrap justify-center items-center">
       {
         projectsCollection.map((project) => {
           const data = project.data;
@@ -79,7 +75,7 @@ const projectsCollection = await getCollection("projects", ({ data }) => {
                   id={`project-model-${data.name}`}
                   class="p-0 h-[90vh] w-[90vw] bg-primary-Dark border-primary-teal border-2 rounded-xl outline-none text-primary-teal  "
                 >
-                  <div class="  w-full h-full relative flex">
+                  <div class=" w-full h-full relative flex">
                     <div
                       class="closebtn text-gray absolute top-0 right-0 cursor-pointer hover:text-white pr-3 pt-2 transition-colors  "
                       onclick={`document.getElementById('project-model-${data.name}').close()`}

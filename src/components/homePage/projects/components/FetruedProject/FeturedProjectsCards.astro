@@ -1,0 +1,59 @@
+---
+type Props = {
+  title: string;
+  gif: string;
+  dicription: string | undefined;
+  projectLink: string | undefined;
+  side: "Left" | "Right";
+};
+const { title, side, dicription, gif, projectLink }: Props = Astro.props;
+// const  side:"Left"|"Right" = "Left"
+
+//
+---
+
+<div
+  class=`cardContainer group relative h-72 ${side ==="Left" ?"desktop:-ml-[10vw] bg-gradient-to-r justify-start ":"desktop:-mr-[10vw] bg-gradient-to-l justify-end "}   rounded-xl w-[80%] mobile:w-[95%] items-center my-[10Vh] flex bg-slate-800 `
+  style={`background-image: url(${gif}); ` +
+    `${
+      side === "Left"
+        ? "background-position: right 0 top;"
+        : "background-position: left -10px top;"
+    }`}
+>
+  <div
+    class={"flex flex-row from-[33%] border-primary-teal items-center text-center from-black  to-transparent h-full w-full absolute " +
+      `${
+        side === "Left"
+          ? "bg-gradient-to-r justify-start border-l-2"
+          : "bg-gradient-to-l justify-end border-r-2"
+      }`}
+  >
+    <div class="w-[50%]">
+      <div class="w-full h-full flex flex-col">
+        <div class="text-3xl pb-4 text-primary-teal">{title}</div>
+        <div class="text-gray text-center text-wrap">{dicription}</div>
+      </div>
+    </div>
+    <div
+      class={"text-teal-300 font-semibold p-3 transition-opacity ease-in duration-200 opacity-0 group-hover:opacity-100 text-center text-wrap pt-3 text-2xl text- bottom-0 absolute " +
+        `${side === "Left" ? "right-0" : "left-0"}`}
+    >
+      <a href={projectLink} target="_blank" rel="noopener noreferrer"
+        >View Details</a
+      >
+    </div>
+  </div>
+</div>
+
+<style>
+  .cardContainer {
+    background-origin: content-box;
+  }
+  button {
+    outline: none;
+  }
+  a {
+    outline: none;
+  }
+</style>
