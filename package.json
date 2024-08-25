@@ -10,7 +10,6 @@
     "astro": "astro"
   },
   "dependencies": {
-    "3d-force-graph": "^1.71.3",
     "@astrojs/mdx": "^0.19.0",
     "@astrojs/partytown": "^1.2.1",
     "@astrojs/preact": "^2.1.0",
@@ -23,8 +22,9 @@
     "@types/node": "^18.16.0",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
+    "3d-force-graph": "^1.71.3",
     "astro": "^2.4.2",
-    "astro-compress": "1.1.30",
+    "astro-compress": "^2.3.1",
     "gsap": "^3.11.5",
     "html-escaper": "^3.0.3",
     "postcss-import": "^15.1.0",
