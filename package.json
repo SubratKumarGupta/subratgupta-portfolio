@@ -23,7 +23,7 @@
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "3d-force-graph": "^1.71.3",
-    "astro": "^2.4.2",
+    "astro": "2.5.2",
     "astro-compress": "^2.3.1",
     "gsap": "^3.11.5",
     "html-escaper": "^3.0.3",
